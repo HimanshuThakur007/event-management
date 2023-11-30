@@ -1,25 +1,38 @@
-import React from 'react'
-import { mahadev } from '../imagepath';
+import React from "react";
+import { mahadev } from "../imagepath";
 const EventCards = (props) => {
   return (
-    <div className="card flex-fill">
-        <div className="card-header flex-row" style={{display:"-webkit-flex", alignItems:"center" , gap:"10px"}} >
-            <span className='avatar'>
-                <img src={mahadev} alt="Not found" />
-            </span>
-            <h5 className="card-title">{props.name}</h5>
-        </div>
-
-        <div className="card-body">
-          <nav className='mb-3'>
-            <div className="nav nav-tabs" id="nav-tab" role="tablist">
-              <button className="nav-link active" id="nav-home-tab" data-bs-toggle="tab" type="button" role="tab" aria-controls="nav-home" aria-selected="true">About</button>
-              <button className="nav-link" id="nav-profile-tab" data-bs-toggle="tab" type="button" role="tab" aria-controls="nav-profile" aria-selected="false" tabindex="-1">Review</button>
-            </div>
-          </nav>
-
-          <div className='event_ccontent'>
-            <div className='event_img mb-2'>
+    <>
+      <div className="card">
+       
+        <section className="comp-section" id="comp_tabs">
+          <div className="card-body">
+            <h4 className="card-title">Basic tabs</h4>
+            <ul className="nav nav-tabs">
+              <li className="nav-item">
+                <a
+                  className="nav-link active"
+                  href="#basictab1"
+                  data-bs-toggle="tab"
+                >
+                  Home
+                </a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="#basictab2" data-bs-toggle="tab">
+                  Profile
+                </a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="#basictab3" data-bs-toggle="tab">
+                  Messages
+                </a>
+              </li>
+            </ul>
+            <div className="tab-content">
+              <div className="tab-pane show active" id="basictab1">
+              <div className='event_ccontent'>
+              <div className='event_img mb-2'>
               <img src={mahadev} alt="image not found" />
             </div>
             <div className='event_about mb-2'>
@@ -53,10 +66,23 @@ const EventCards = (props) => {
                   </li>
               </ul>
             </div>
+            </div>
+              </div>
+              <div className="tab-pane" id="basictab2">
+                Tab content 2
+              </div>
+              <div className="tab-pane" id="basictab3">
+                Tab content 3
+              </div>
+              
+            </div>
+
+           
           </div>
-        </div>
+        </section>
       </div>
-  )
-}
+    </>
+  );
+};
 
 export default EventCards;

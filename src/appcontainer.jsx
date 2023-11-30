@@ -178,6 +178,7 @@ import BirthDayReport from "./components/BirthDayReport/BirthDayReport";
 import ContactsReview from "./components/review/ContactReview";
 import SiteWiseFeedBack from "./components/feedback/SiteWiseFeedBack";
 import GraphicalReport from "./components/GraphicalReport/GraphicalReport";
+import ResolvedSms from "./components/review/ResolvedSms.jsx";
 
 const AppUniversal = (props) => {  
 //   function toggleTheme(e) {     
@@ -291,6 +292,7 @@ const AppUniversal = (props) => {
           <Route path='/contact_review' exact component={ContactsReview}/>
           <Route path='/feedback_sitewise' exact component={SiteWiseFeedBack}/>
           <Route path='/graphical_report' exact component={GraphicalReport}/>
+          <Route path='/resolvedsms_report' exact component={ResolvedSms}/>
           {/* <Route path='/review' exact component={ReviewComp}/> */}
 
           {/* Invoices */}

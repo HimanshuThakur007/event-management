@@ -496,8 +496,13 @@ const SiteWiseFeedBack = () => {
             <div className="card mb-0">
               <div className="card-header">
               <div className="col-xl-12 d-flex justify-content-between">
-                <h4 className="card-title mb-0">
+                <h4 className="card-title d-flex mb-0">
+                  <span className="mt-1">
                   {typeCode == 1 ? "Event Contacts" : "Template Contacts"}
+                  </span>
+                  <span className="ml-5">
+                  <InputSearch search1={setSearchText} search2={setSearchText}/>
+                  </span>
                 </h4>
                 <span onClick={handleExportClick}><SiMicrosoftexcel size={25} style={iconStyles}/></span>
               </div>
@@ -508,7 +513,7 @@ const SiteWiseFeedBack = () => {
                     
                   </div> */}
                 <div className="table-responsive">
-                <InputSearch search1={setSearchText} search2={setSearchText}/>
+               
                   <Table
                     className="table table-striped table-nowrap custom-table mb-0 datatable dataTable no-footer"
                     // rowSelection={rowSelection}

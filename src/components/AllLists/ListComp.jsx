@@ -7,6 +7,7 @@ import {
 } from "react-router-dom/cjs/react-router-dom.min";
 import { Button } from "antd";
 import { FiEdit, FiPlusCircle, FiTrash2, FiXCircle } from "react-icons/fi";
+import { Excel } from 'antd-table-saveas-excel';
 
 const ListComp = () => {
   var api = useFetch();
@@ -265,6 +266,20 @@ const ListComp = () => {
       setLoading(false);
       alert(err);
     }
+  };
+
+  const handleExportClick = () => {
+    const excel = new Excel();
+    excel
+      .addSheet('test')
+      .addColumns(rowData.filter((column) => column.key !== 'action'))
+      .addDataSource(
+        listData.map(({ key, action, ...rest }) => rest),
+        {
+          str2Percent: true,
+        }
+      )
+      .saveAs('Event.xlsx');
   };
 
   const Site = [
@@ -643,11 +658,11 @@ const ListComp = () => {
   ];
 
   const columnCustomerList = [
-    {
-      title: "SrNo",
-      key: "index",
-      render: (text, record, index) => index + 1,
-    },
+    // {
+    //   title: "SrNo",
+    //   key: "index",
+    //   render: (text, record, index) => index + 1,
+    // },
     {
       title: "Name",
       dataIndex: "name",
@@ -671,7 +686,6 @@ const ListComp = () => {
           <a>{text} </a>
         </>
       ),
-      sorter: (a, b) => a.name.length - b.name.length,
     },
     {
       title: "User Name",
@@ -730,6 +744,17 @@ const ListComp = () => {
       ),
     },
   ];
+
+  const preprocessDataForExport = () => {
+    // Map and modify the data to include pre-rendered values
+    const modifiedDataSource = listData.map(item => ({
+      ...item,
+      name: `${entry.name.charAt(0)} ${entry.name}`,
+      // Include other modifications or renderings needed for export
+    }));
+    return modifiedDataSource;
+  };
+
 
   //  -------------------create userList rowdata-------------------------------
   const columnss = [
@@ -1107,6 +1132,7 @@ const ListComp = () => {
         onRowClick={onRowClick}
         routeParams={routeParams}
         setSearchText={setSearchText}
+        handleExportClick={handleExportClick}
       />
     </>
   );

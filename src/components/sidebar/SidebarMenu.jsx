@@ -32,7 +32,7 @@ import {
 import { SiMastercomfig } from "react-icons/si";
 import { FiUserPlus } from "react-icons/fi";
 import {MdOutlineReviews} from "react-icons/md";
-import { GoLightBulb } from "react-icons/go";
+import { VscGraph } from "react-icons/vsc";
 
 const SidebarMenu = ({ menuItems }) => {
   const icons = {
@@ -50,7 +50,7 @@ const SidebarMenu = ({ menuItems }) => {
     "<BiCalendarEvent />":<BiCalendarEvent />,
     "<BiTask />":<BiTask />,
     "<MdOutlineReviews />":<MdOutlineReviews />,
-    "<GoLightBulb />":<GoLightBulb />
+    "<VscGraph />":<VscGraph />
   };
   const renderMenu = (items) => {
     return items.map((item) => (

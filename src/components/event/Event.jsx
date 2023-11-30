@@ -291,7 +291,7 @@ const Events = () => {
         e.preventDefault();
           if (state && state.code) {
             var code = state.code;}
-          const url = "/api/SaveTemplateMaster";
+          // const url = "/api/SaveTemplateMaster";
           // console.log('codeUsers', code)
           let queArr=[]
           let mainArr = [];

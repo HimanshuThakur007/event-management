@@ -11,6 +11,7 @@ import DateTimeInput from '../../CustomComp/DateTimeInput';
 import CheckboxTree from "react-checkbox-tree";
 import "react-checkbox-tree/lib/react-checkbox-tree.css";
 import { NestedCheckbox } from '../../NestedCheckbox/NestedCheckbox';
+import { TreeView } from '../../NestedCheckbox/TreeNode';
 
 
 const UserPage = (props) => {
@@ -260,6 +261,7 @@ const UserPage = (props) => {
                     props.setExpanded(expandedData);
                   }}
                 />
+                {/* <TreeView data={props.nodes}/> */}
                 {/* <NestedCheckbox data={props.nodes}/> */}
                 </CardComp>
               

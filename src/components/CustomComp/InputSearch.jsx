@@ -2,12 +2,11 @@ import React from 'react';
 import { Input } from "antd";
 
 const InputSearch = (props) => {
-    const [searchText, setSearchText] = React.useState("");
   return (
     <div>
         <Input.Search
                     placeholder="Search Here"
-                    style={{ marginBottom: 8 }}
+                    className='status-toggle'
                     onSearch={(value) => {
                       props.search1(value);
                     }}

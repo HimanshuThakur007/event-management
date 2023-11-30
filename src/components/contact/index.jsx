@@ -125,7 +125,9 @@ const Contacts = () => {
       dataIndex: "name",
       filteredValue: [searchText],
       onFilter: (value, record) => {
-        return String(record.name).toLowerCase().includes(value.toLowerCase());
+        return String(record.name).toLowerCase().includes(value.toLowerCase())||
+         String(record.mobNo).toLowerCase().includes(value.toLowerCase())||
+         String(record.email).toLowerCase().includes(value.toLowerCase())
       },
       render: (text, record) => (
         <span className="badge" style={{ background: getRandomColor() }}>{text}</span>
@@ -252,7 +254,15 @@ const Contacts = () => {
             <div className="card mb-0">
             <div className="card-header">
             <div className="col-xl-12 d-flex justify-content-between">
-                <h4 className="card-title mb-0">Contacts</h4>
+                <h4 className="card-title d-flex mb-0">
+                  <span className="mt-1">
+
+                  Contacts
+                  </span>
+                  <span className="ml-2">
+                  <InputSearch search1={setSearchText} search2={setSearchText}/>
+                  </span>
+                  </h4>
                 <span onClick={handleExportClick}><SiMicrosoftexcel size={25} style={iconStyles}/></span>
                 </div>
               </div>
@@ -261,7 +271,7 @@ const Contacts = () => {
               <button className="btn btn-primary" onClick={handleExportClick}>Export</button>
               </div> */}
                 <div className="table-responsive">
-                <InputSearch search1={setSearchText} search2={setSearchText}/>
+               
                   <Table className="table table-striped table-nowrap custom-table mb-0 datatable dataTable no-footer"
                     rowSelection={rowSelection}
                     // className="table"

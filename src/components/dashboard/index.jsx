@@ -15,6 +15,7 @@ import DoughnutChart1 from "./piechart/piechart3";
 import { BiUser } from "react-icons/bi";
 import useFetch from "../Hooks/useFetch";
 import VerticalBarChart from "./verticalbarchart/VerticalBarChart";
+import { convertDate } from "../CustomComp/DateTimeInput";
 
 const Dashboard = () => {
   let api = useFetch();
@@ -22,6 +23,25 @@ const Dashboard = () => {
   const [eventList, setEventList] = React.useState(0);
   const [templateList, setTemplateList] = React.useState(0);
   const [tableDataList, setTableDataList] = React.useState([]);
+  const [startDate, setStartDate] = React.useState('');
+  const [endDate, setEndDate] = React.useState('');
+  React.useEffect(() => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+
+    // Set start date to January 1st of the current year
+    const startDate = new Date(currentYear, 0, 1);
+    const formattedStartDate = convertDate(startDate)
+    setStartDate(formattedStartDate);
+
+    // Set end date to December 31st of the current year
+    const endDate = new Date(currentYear, 11, 31);
+    const formattedEndDate = convertDate(endDate)
+    setEndDate(formattedEndDate);
+
+    getTableDataList(startDate,endDate)
+  }, []);
+  console.log("ssssdate",startDate,endDate)
   const getEventList = async () => {
     let eventUrl = `/api/LoadEventDetails?Code=0`;
     try {
@@ -62,16 +82,18 @@ const Dashboard = () => {
     }
   };
 
-  const getTableDataList = async () => {
-    let eventUrl = `/api/EventCustomerList`;
-    // console.log("url", eventUrl)
+  const getTableDataList = async (startDate,endDate) => {
+    let sDate=convertDate(startDate);
+    let eDate=convertDate(endDate)
+    let eventUrl = `/api/EventCustomerList?FDate=${sDate}&EDate=${eDate}`;
+    console.log("url", eventUrl)
     try {
       // setLoading(true);
       let { res, got } = await api(eventUrl, "GET", "");
       if (res.status == 200) {
         let list = got.data;
 
-        console.log("tableData", list);
+        console.log("contactList", list);
         setTableDataList(list.length);
 
         // setTemplateList(currData);
@@ -161,7 +183,7 @@ const Dashboard = () => {
 
   React.useEffect(() => {
     if (userDatas != null) {
-      getTableDataList();
+      
       getEventList();
       getTemplateList();
     }
@@ -296,7 +318,7 @@ const Dashboard = () => {
                 data-background="assets/img/bg/count-bg.png"
               ></div>
               <div className="expovent__count-content">
-                <h3 className="expovent__count-number">{tableDataList}</h3>
+                <h3 className="expovent__count-number">{tableDataList}+</h3>
                 <span className="expovent__count-text">Total Contacts</span>
               </div>
               <div className="expovent__count-icon">

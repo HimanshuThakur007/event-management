@@ -4,21 +4,21 @@ import { Link } from "react-router-dom";
 import { Table } from "antd";
 import "../antdstyle.css";
 import { itemRender, onShowSizeChange } from "../paginationfunction";
-import { MdOutlinePublish } from 'react-icons/md'
-import { SiMicrosoftexcel } from 'react-icons/si'
-import { avatar11, avatar10 } from "../imagepath"
-import SubmitButton from '../CustomComp/SubmitButton'
+import { MdOutlinePublish } from "react-icons/md";
+import { SiMicrosoftexcel } from "react-icons/si";
+import { avatar11, avatar10 } from "../imagepath";
+import SubmitButton from "../CustomComp/SubmitButton";
 import InputSelect from "../CustomComp/InputSelect";
-import DateTimeInput, { convert, convertDate } from "../CustomComp/DateTimeInput";
+import DateTimeInput, {
+  convert,
+  convertDate,
+} from "../CustomComp/DateTimeInput";
 import useFetch from "../Hooks/useFetch";
 import ReviewComp from "./ReviewComp";
 import ReactToast from "../CustomComp/ReactToast";
 import ReactLoader from "../CustomComp/ReactLoader";
 import { Excel } from "antd-table-saveas-excel";
 import InputSearch from "../CustomComp/InputSearch";
-
-
-
 
 const rowSelection = {
   onChange: (selectedRowKeys, selectedRows) => {
@@ -28,35 +28,35 @@ const rowSelection = {
       selectedRows
     );
   },
-  getCheckboxProps: record => ({
+  getCheckboxProps: (record) => ({
     disabled: record.name === "Disabled User", // Column configuration not to be checked
     name: record.name,
-    className: "checkbox-red"
-  })
+    className: "checkbox-red",
+  }),
 };
 
 const ContactsReview = () => {
-  let api=useFetch();
+  let api = useFetch();
   const DataType = [
-    {value:1,label:"Event"},
-    {value:2,label:"Template"}
-  ]
+    { value: 1, label: "Event" },
+    { value: 2, label: "Template" },
+  ];
   const [selectedValues, setSelectedValues] = React.useState({
     select1: null,
     select2: null,
     select3: null,
-    select4: null
+    select4: null,
   });
-  const [typeCode ,setTypeCode] = React.useState(0)
-  const [tempCode ,setTempCode] = React.useState(0)
-  const [enevtCode ,setEventCode] = React.useState(0)
-  const [siteCode ,setSiteCode] = React.useState(0)
+  const [typeCode, setTypeCode] = React.useState(0);
+  const [tempCode, setTempCode] = React.useState(0);
+  const [enevtCode, setEventCode] = React.useState(0);
+  const [siteCode, setSiteCode] = React.useState(0);
   const [dates, setDates] = React.useState({
     date1: new Date(),
-    date2: new Date()
+    date2: new Date(),
   });
-  let sdate = convertDate(dates.date1)
-  let edate = convertDate(dates.date2)
+  let sdate = convertDate(dates.date1);
+  let edate = convertDate(dates.date2);
   const [templateList, setTemplateList] = React.useState([]);
   const [eventList, setEventList] = React.useState([]);
   const [tableDataList, setTableDataList] = React.useState([]);
@@ -65,28 +65,28 @@ const ContactsReview = () => {
   const [searchText, setSearchText] = React.useState("");
 
   const customStyles = {
-    control: base => ({
+    control: (base) => ({
       ...base,
       height: 45,
-      minHeight: 45
-    })
+      minHeight: 45,
+    }),
   };
   // ===================Event-List========================
   const getEventList = async () => {
-    let currData =[];
-    let addobj = {label:"All", value:0}
-    currData[0]=addobj
+    let currData = [];
+    let addobj = { label: "All", value: 0 };
+    currData[0] = addobj;
     let eventUrl = `/api/LoadEventDetails?Code=0`;
     try {
       setLoading(true);
       let { res, got } = await api(eventUrl, "GET", "");
       if (res.status == 200) {
         let list = got.data;
-       
+
         // console.log("llllist3", list);
-        list.forEach((item)=>{
-          currData.push({value:item.code,label:item.name})
-        })
+        list.forEach((item) => {
+          currData.push({ value: item.code, label: item.name });
+        });
         setEventList(currData);
         setLoading(false);
       } else {
@@ -100,20 +100,20 @@ const ContactsReview = () => {
   };
   // ===================Event-List========================
   const getTemplateList = async () => {
-    let currData =[];
-    let addobj = {label:"All", value:0}
-    currData[0]=addobj
+    let currData = [];
+    let addobj = { label: "All", value: 0 };
+    currData[0] = addobj;
     let eventUrl = `/api/LoadTemplateDetails?Code=0`;
     try {
       setLoading(true);
       let { res, got } = await api(eventUrl, "GET", "");
       if (res.status == 200) {
         let list = got.data;
-       
+
         // console.log("llllist3", list);
-        list.forEach((item)=>{
-          currData.push({value:item.code,label:item.name})
-        })
+        list.forEach((item) => {
+          currData.push({ value: item.code, label: item.name });
+        });
         setTemplateList(currData);
         setLoading(false);
       } else {
@@ -127,32 +127,32 @@ const ContactsReview = () => {
   };
 
   // ========================SiteList==========================
-const getSiteList = async () => {
-  let corrData = [];
-  let addobj = {label:"All", value:0}
-  corrData[0]=addobj
-  let Url = `/api/LoadMasterDetails1?code=0&MasterType=100`;
-  try {
-    setLoading(true);
-    let { res, got } = await api(Url, "GET", "");
-    if (res.status == 200) {
-      // console.log("depdata", got.data);
-      let list = got.data;
+  const getSiteList = async () => {
+    let corrData = [];
+    let addobj = { label: "All", value: 0 };
+    corrData[0] = addobj;
+    let Url = `/api/LoadMasterDetails1?code=0&MasterType=100`;
+    try {
+      setLoading(true);
+      let { res, got } = await api(Url, "GET", "");
+      if (res.status == 200) {
+        // console.log("depdata", got.data);
+        let list = got.data;
 
-      list.forEach((element) => {
-        corrData.push({ value: element.code, label: element.name });
-      });
-      setSiteList(corrData);
+        list.forEach((element) => {
+          corrData.push({ value: element.code, label: element.name });
+        });
+        setSiteList(corrData);
+        setLoading(false);
+      } else {
+        setLoading(false);
+        alert("Something Went Wrong in List loading");
+      }
+    } catch (err) {
       setLoading(false);
-    } else {
-      setLoading(false);
-      alert("Something Went Wrong in List loading");
+      alert(err);
     }
-  } catch (err) {
-    setLoading(false);
-    alert(err);
-  }
-};
+  };
 
   const getTableDataList = async () => {
     setTempCode(0);
@@ -183,33 +183,38 @@ const getSiteList = async () => {
     }
   };
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     getEventList();
     getTemplateList();
     getSiteList();
-  },[])
+  }, []);
 
-  
   const handleDateChange = (dateFieldName, dateValue) => {
     setDates({
       ...dates,
       [dateFieldName]: dateValue,
     });
-    
-};
+  };
 
-   // ----------------------multiple-Select-----------------------
-   const handleSelectChange = (selectedOption, selectName, setSelectedValues) => {
- 
+  // ----------------------multiple-Select-----------------------
+  const handleSelectChange = (
+    selectedOption,
+    selectName,
+    setSelectedValues
+  ) => {
     // console.log(`Selected value for ${selectName}:`, selectedOption);
-    
- {
-  selectName == "select1" ? setTypeCode(selectedOption.value):
-  selectName == 'select2'?setEventCode(selectedOption.value):
-  selectName == 'select3'?setTempCode(selectedOption.value):
-  selectName == 'select4'?setSiteCode(selectedOption.value):
-  null
- }
+
+    {
+      selectName == "select1"
+        ? setTypeCode(selectedOption.value)
+        : selectName == "select2"
+        ? setEventCode(selectedOption.value)
+        : selectName == "select3"
+        ? setTempCode(selectedOption.value)
+        : selectName == "select4"
+        ? setSiteCode(selectedOption.value)
+        : null;
+    }
 
     setSelectedValues((prevSelectedValues) => ({
       ...prevSelectedValues,
@@ -233,134 +238,131 @@ const getSiteList = async () => {
       dataIndex: "custName",
       filteredValue: [searchText],
       onFilter: (value, record) => {
-        return String(record.custName).toLowerCase().includes(value.toLowerCase())||
-        String(record.mobNo).toLowerCase().includes(value.toLowerCase())
+        return (
+          String(record.custName).toLowerCase().includes(value.toLowerCase()) ||
+          String(record.mobNo).toLowerCase().includes(value.toLowerCase())
+        );
       },
-      render: (text, record) => (
-        <span className="text-primary">{text}</span>
-      ),
-      sorter: (a, b) => a.custName.length - b.custName.length
+      render: (text, record) => <span className="text-primary">{text}</span>,
+      sorter: (a, b) => a.custName.length - b.custName.length,
     },
     {
       title: "Site",
       dataIndex: "site",
-      render: (text, record) => (
-        <span className="text-primary">{text}</span>
-      ),
-      sorter: (a, b) => a.custName.length - b.custName.length
+      render: (text, record) => <span className="text-primary">{text}</span>,
+      sorter: (a, b) => a.custName.length - b.custName.length,
     },
     {
-      title:`${typeCode == 1 ? "Event":"Template"}` ,
+      title: `${typeCode == 1 ? "Event" : "Template"}`,
       dataIndex: "name",
       render: (text, record) => (
         <span className="badge" style={{ background: getRandomColor() }}>
           {text}
         </span>
       ),
-      sorter: (a, b) => a.name.length - b.name.length
+      sorter: (a, b) => a.name.length - b.name.length,
     },
-  
-   
+
     {
       title: "Mobile",
       dataIndex: "mobNo",
-      render: (text, record) => (
-        <>{text}</>
-      ),
+      render: (text, record) => <>{text}</>,
     },
     {
       title: "Email",
       dataIndex: "email",
-      render: (text, record) => (
-        <>{text}</>
-      ),
+      render: (text, record) => <>{text}</>,
     },
-   
+
     {
       title: "Description",
       dataIndex: "desc",
-      render: (text, record) => (
-        <>{text}</>
-      ),
+      render: (text, record) => <>{text}</>,
     },
     {
       title: "Remark",
       dataIndex: "remark",
-      render: (text, record) => (
-        <>{text}</>
-      ),
+      render: (text, record) => <>{text}</>,
     },
   ];
-  let iconStyles = { color: "#10793F", cursor:'pointer'};
+  let iconStyles = { color: "#10793F", cursor: "pointer" };
   const handleExportClick = () => {
     const excel = new Excel();
     excel
       .addSheet("test")
       .addColumns(columns)
       .addDataSource(tableDataList, {
-        str2Percent: true
+        str2Percent: true,
       })
       .saveAs("ContactReview.xlsx");
   };
 
   return (
     <div className="page-wrapper">
-       <ReactToast/>
+      <ReactToast />
       <Helmet>
         <title>Contacts- Event&Management</title>
         <meta name="description" content="Review page" />
       </Helmet>
       <div className="content container-fluid">
-      {loading ? (
-        <ReactLoader loaderClass="position-absolute" loading={loading} />
-      ) : null}
+        {loading ? (
+          <ReactLoader loaderClass="position-absolute" loading={loading} />
+        ) : null}
         {/* Page Header */}
         <div className="crms-title row bg-white mb-0">
           <div className="col p-0">
             <h3 className="page-title">
               <span className="page-title-icon bg-gradient-primary text-white me-2">
                 <i className="fa fa-object-group" aria-hidden="true" />
-              </span>Contacts
+              </span>
+              Contacts
             </h3>
           </div>
           <div className="col p-0 text-end">
             <ul className="breadcrumb bg-white float-end m-0 pl-0 pr-0">
-              <li className="breadcrumb-item"><Link to="/">Dashboard</Link></li>
+              <li className="breadcrumb-item">
+                <Link to="/">Dashboard</Link>
+              </li>
               <li className="breadcrumb-item active">Contacts</li>
             </ul>
           </div>
         </div>
         {/* Page Header Second */}
-        <ReviewComp/>
-         {/* /-------------Page Header with inputField-----*/}
-         
-         <div className="row pt-4">
-            <div className="col-md-12">
-              <div className="card">
-            
-                <div className="card-body">
-                  <div className="row pt-2">
-                    <div className="col-xl-2">
-                      <InputSelect
-                        labelClass=""
-                        selectName="Type"
-                        selectClass="col-lg-12"
-                        placeholder="Event Type"
-                        value={selectedValues.select1}
-                        onChange={(selectedOption) =>
-                         handleSelectChange(selectedOption, 'select1', setSelectedValues)}
-                         styles={customStyles}
-                        options={DataType}
-                       
-                      />
-                    </div>
-                    <div className="col-xl-2">
+        <ReviewComp />
+        {/* /-------------Page Header with inputField-----*/}
+
+        <div className="row pt-4">
+          <div className="col-md-12">
+            <div className="card">
+              <div className="card-body">
+                <div className="row pt-2">
+                  <div className="col-xl-2">
+                    <InputSelect
+                      labelClass=""
+                      selectName="Type"
+                      selectClass="col-lg-12"
+                      placeholder="Event Type"
+                      value={selectedValues.select1}
+                      onChange={(selectedOption) =>
+                        handleSelectChange(
+                          selectedOption,
+                          "select1",
+                          setSelectedValues
+                        )
+                      }
+                      styles={customStyles}
+                      options={DataType}
+                    />
+                  </div>
+                  <div className="col-xl-2">
                     <InputSelect
                       labelClass=""
                       selectName="Site"
                       selectClass="col-lg-12"
                       placeholder="Site List"
-                      value={selectedValues.select4||{label:"All", value:0}}
+                      value={
+                        selectedValues.select4 || { label: "All", value: 0 }
+                      }
                       onChange={(selectedOption) =>
                         handleSelectChange(
                           selectedOption,
@@ -372,65 +374,70 @@ const getSiteList = async () => {
                       styles={customStyles}
                     />
                   </div>
-                    <div className="col-xl-2">
-                      {typeCode == 1?(
+                  <div className="col-xl-2">
+                    {typeCode == 1 ? (
                       <InputSelect
                         labelClass=""
                         selectName="Event"
                         selectClass="col-lg-12"
-                        
                         placeholder="event"
-                        value={selectedValues.select2||{label:"All", value:0}}
+                        value={
+                          selectedValues.select2 || { label: "All", value: 0 }
+                        }
                         onChange={(selectedOption) =>
-                         handleSelectChange(selectedOption, 'select2', setSelectedValues)}
-                         styles={customStyles}
+                          handleSelectChange(
+                            selectedOption,
+                            "select2",
+                            setSelectedValues
+                          )
+                        }
+                        styles={customStyles}
                         options={eventList}
-                       
                       />
-                      ):(
-                        <InputSelect
+                    ) : (
+                      <InputSelect
                         labelClass=""
                         selectName="Template"
                         selectClass="col-lg-12"
-                        
                         placeholder="Template"
-                        value={selectedValues.select3||{label:"All", value:0}}
+                        value={
+                          selectedValues.select3 || { label: "All", value: 0 }
+                        }
                         onChange={(selectedOption) =>
-                         handleSelectChange(selectedOption, 'select3', setSelectedValues)}
-                         styles={customStyles}
+                          handleSelectChange(
+                            selectedOption,
+                            "select3",
+                            setSelectedValues
+                          )
+                        }
+                        styles={customStyles}
                         options={templateList}
-                       
                       />
-                      )}
-                    </div>
-                    <div className="col-xl-2">
+                    )}
+                  </div>
+                  <div className="col-xl-2">
                     <DateTimeInput
-                        datelblClass=""
-                        dateinpClass="col-lg-12"
-                        datelabel="Start Date"
-                        // datestar="*"
-                        dateFormat="dd/MM/yyyy"
-                        selected={dates.date1}
-                        onChange={(date) =>
-                          handleDateChange("date1", date)
-                        }
-                      />
-                    </div>
-                    <div className="col-xl-2">
-                    
+                      datelblClass=""
+                      dateinpClass="col-lg-12"
+                      datelabel="Start Date"
+                      // datestar="*"
+                      dateFormat="dd/MM/yyyy"
+                      selected={dates.date1}
+                      onChange={(date) => handleDateChange("date1", date)}
+                    />
+                  </div>
+                  <div className="col-xl-2">
                     <DateTimeInput
-                        datelblClass=""
-                        dateinpClass="col-lg-12"
-                        datelabel="End Date"
-                        // datestar="*"
-                        dateFormat="dd/MM/yyyy"
-                        selected={dates.date2}
-                        onChange={(date) =>
-                          handleDateChange("date2", date)
-                        }
-                      />
-                    </div>
-                    <div
+                      datelblClass=""
+                      dateinpClass="col-lg-12"
+                      datelabel="End Date"
+                      // datestar="*"
+                      dateFormat="dd/MM/yyyy"
+                      selected={dates.date2}
+                      onChange={(date) => handleDateChange("date2", date)}
+                    />
+                  </div>
+                  <div
                     className="col-xl-2"
                     style={{
                       display: "flex",
@@ -446,39 +453,59 @@ const getSiteList = async () => {
                       />
                     </div>
                   </div>
-                  </div>
-                  {/* <SubmitButton
+                </div>
+                {/* <SubmitButton
                         parentClass="text-center"
                         onClick={getTableDataList}
                         btnName="Load Data"
                       /> */}
-                </div>
               </div>
             </div>
           </div>
+        </div>
         <div className="row">
           <div className="col-md-12">
             <div className="card mb-0">
-            <div className="card-header">
-            <div className="col-xl-12 d-flex justify-content-between">
-                <h4 className="card-title mb-0">{typeCode == 1 ?"Event Contacts":"Template Contacts"}</h4>
-                <span onClick={tableDataList.length > 0 ? handleExportClick:null}><SiMicrosoftexcel size={25} style={iconStyles}/></span>
+              <div className="card-header">
+                <div className="col-xl-12 d-flex justify-content-between">
+                  <h4 className="card-title d-flex mb-0">
+                    <span className="mt-1">
+                      {typeCode == 1 ? "Event Contacts" : "Template Contacts"}
+                    </span>
+                    <span className="ml-5">
+                      <InputSearch
+                        search1={setSearchText}
+                        search2={setSearchText}
+                      />
+                    </span>
+                  </h4>
+                  <span
+                    onClick={
+                      tableDataList.length > 0 ? handleExportClick : null
+                    }
+                  >
+                    <SiMicrosoftexcel size={25} style={iconStyles} />
+                  </span>
                 </div>
               </div>
               <div className="card-body">
-              {/* <div className="col-xl-12 d-flex justify-content-end">
+                {/* <div className="col-xl-12 d-flex justify-content-end">
                     <button className="btn btn-primary" onClick={handleExportClick}>Export</button>
                   </div> */}
                 <div className="table-responsive">
-                <InputSearch search1={setSearchText} search2={setSearchText}/>
-                  <Table className="table table-striped table-nowrap custom-table mb-0 datatable dataTable no-footer"
+                  {/* <InputSearch search1={setSearchText} search2={setSearchText}/> */}
+                  <Table
+                    className="table table-striped table-nowrap custom-table mb-0 datatable dataTable no-footer"
                     rowSelection={rowSelection}
                     // className="table"
                     style={{ overflowX: "auto" }}
                     pagination={{
                       total: tableDataList.length,
-                      showTotal: (total, range) => `Showing ${range[0]} to ${range[1]} of ${total} entries`,
-                      showSizeChanger: true, onShowSizeChange: onShowSizeChange, itemRender: itemRender
+                      showTotal: (total, range) =>
+                        `Showing ${range[0]} to ${range[1]} of ${total} entries`,
+                      showSizeChanger: true,
+                      onShowSizeChange: onShowSizeChange,
+                      itemRender: itemRender,
                     }}
                     columns={columns}
                     dataSource={tableDataList}
@@ -490,7 +517,6 @@ const getSiteList = async () => {
           </div>
         </div>
       </div>
-      
     </div>
   );
 };

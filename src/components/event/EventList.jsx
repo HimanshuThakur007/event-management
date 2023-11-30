@@ -9,6 +9,7 @@ import useFetch from "../Hooks/useFetch";
 import { Excel } from "antd-table-saveas-excel";
 import { SiMicrosoftexcel } from "react-icons/si";
 import InputSearch from "../CustomComp/InputSearch";
+import ReactLoader from "../CustomComp/ReactLoader";
 
 const rowSelection = {
   onChange: (selectedRowKeys, selectedRows) => {
@@ -30,7 +31,7 @@ const EventList = () => {
 
   let history = useHistory();
   const [eventList, setEventList] = React.useState([]);
-
+  const [loading, setLoading] = React.useState(false);
   const navigateHandle = () => {
     history.push("/event-add");
   };
@@ -45,19 +46,20 @@ const EventList = () => {
   const getEventList = async () => {
     let eventUrl = `/api/LoadEventDetails?Code=0`;
     try {
-      // setLoading(true);
+      setLoading(true);
       let { res, got } = await api(eventUrl, "GET", "");
+      console.log('listurl',eventUrl)
       if (res.status == 200) {
         let list = got.data;
         setEventList(list);
-        // console.log('llllist43', list)
-        // setLoading(false);
+        console.log('llllist43', list)
+        setLoading(false);
       } else {
-        // setLoading(false);
+        setLoading(false);
         alert("Something Went Wrong in List loading");
       }
     } catch (err) {
-      // setLoading(false);
+      setLoading(false);
       alert(err);
     }
   };
@@ -224,6 +226,9 @@ const EventList = () => {
         <title>Event - Event&Management</title>
         <meta name="description" content="Event Page" />
       </Helmet>
+      {loading ? (
+        <ReactLoader loaderClass="position-absolute" loading={loading} />
+      ) : null}
       <div className="content container-fluid">
         {/* Page Header */}
         <div className="crms-title row bg-white">
