@@ -6,6 +6,7 @@ import GraphicalReportPage from "./GraphicalReportPage";
 import useFetch from "../Hooks/useFetch";
 import { convertDate, convertDate2 } from "../CustomComp/DateTimeInput";
 import JsPDF from 'jspdf';
+import { showToastError } from "../CustomComp/ReactToast";
 
 const GraphicalReport = () => {
   let api = useFetch()
@@ -25,17 +26,28 @@ const GraphicalReport = () => {
   const [siteName,setSiteName]= React.useState("")
   const [templateCode,setTemplateCode]= React.useState(0)
   const [loading, setLoading] = React.useState(false);
+  const[feedBackGraph,setFeedBackGraph]=React.useState([])
+
+  const userData = sessionStorage.getItem("userData");
+  if (userData !== null) {
+    var userId = JSON.parse(userData).UserId
+  } 
    // -----multiple-Select-----------------------
    const handleSelectChange = (selectedOption, selectName, setSelectedValues) => {
  
     // console.log(`Selected value for ${selectName}:`, selectedOption);
-    
- {
-  selectName == "select1" ? (setSiteCode(selectedOption.value),
-  setSiteName(selectedOption.label)):
-  selectName == 'select2'?setTemplateCode(selectedOption.value):
-  null
- }
+    if(selectName === "select1"){
+      setSiteCode(selectedOption.value)
+      setSiteName(selectedOption.label)
+    }else if(selectName === 'select2'){
+      setTemplateCode(selectedOption.value)
+    }
+//  {
+//   selectName == "select1" ? (setSiteCode(selectedOption.value),
+//   setSiteName(selectedOption.label)):
+//   selectName == 'select2'?setTemplateCode(selectedOption.value):
+//   null
+//  }
 
     setSelectedValues((prevSelectedValues) => ({
       ...prevSelectedValues,
@@ -49,7 +61,6 @@ const GraphicalReport = () => {
   });
   
 };
-const[feedBackGraph,setFeedBackGraph]=React.useState([])
 
  // ===================site-Graphical========================
  const getSiteWiseHappyGraficReport = async () => {
@@ -62,12 +73,17 @@ const[feedBackGraph,setFeedBackGraph]=React.useState([])
     let { res, got } = await api(eventUrl, "GET", "");
     if (res.status == 200) {
       let list = got;
-      console.log('listdata', list.length)
-     
-      setFeedBackGraph(list)
-     
+      console.log('listdata', list.length >0?"hhh":"ttt")
+      
+      if(list.length > 0){
+        // console.log('Hello great')
+        setFeedBackGraph(list)
+      }else{
+        // console.log('hello less')
+        alert("No Record Found!!") 
 
-
+      }
+          
       setLoading(false);
     } else {
       setLoading(false);
@@ -85,7 +101,7 @@ console.log('fffff',feedBackGraph)
 
   const getSiteList = async () => {
     let corrData = [];
-    let Url = `/api/LoadMasterDetails1?code=0&MasterType=100`;
+    let Url = `/api/LoadReportingSites?User=${userId}`;
     try {
       setLoading(true);
       let { res, got } = await api(Url, "GET", "");

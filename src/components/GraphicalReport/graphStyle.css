@@ -1,0 +1,11 @@
+/* GraphCard.css */
+.graph-card-container {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    transition: transform 0.5s;
+  }
+  
+  .graph-card-container:hover {
+    transform: rotateY(10deg);
+  }
+  

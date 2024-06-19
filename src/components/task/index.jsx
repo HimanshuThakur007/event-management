@@ -116,20 +116,17 @@ const handleMultiSiteChange = (selectOptions) => {
   ) => {
     // console.log(`Selected value for ${selectName}:`, selectedOption);
     // console.log('ccccccccc',selectedOption)
-
-    {
-      selectName == "select1"
-        ? setPurposeCode(selectedOption.value)
-        : selectName == "select2"
-        ? setPriorityCode(selectedOption.value)
-        : selectName == "select3"
-        ? setStatusCode(selectedOption.value)
-        : selectName == "select4"
-        ? setSiteCode(selectedOption.value)
-        : selectName == "select5"
-        ? setCustomerCode(selectedOption.value)
-        : null;
-    }
+if(selectName ==="select1"){
+  setPurposeCode(selectedOption.value)
+}else if(selectName === "select2"){
+  setPriorityCode(selectedOption.value)
+}else if(selectName === "select3"){
+  setStatusCode(selectedOption.value)
+}else if(selectName === "select4"){
+  setSiteCode(selectedOption.value)
+}else if(selectName === "select5"){
+  setCustomerCode(selectedOption.value)
+}
 
     setSelectedValues((prevSelectedValues) => ({
       ...prevSelectedValues,
@@ -557,10 +554,7 @@ const handleMultiSiteChange = (selectOptions) => {
     code = record.code;
     // console.log(code);
     getModifyHandler(code);
-    // history.push({
-    //   pathname: "/tasks",
-    //   state: { code: record.code },
-    // });
+    
   };
 
   const getTemplateList = async () => {

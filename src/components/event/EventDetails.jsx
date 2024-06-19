@@ -7,14 +7,21 @@ import { Base64ImageConverter } from "./Base64ImageConverter";
 import ReactLoader from "../CustomComp/ReactLoader";
 import "../../assets/css/loaders.css";
 import Item from "antd/lib/list/Item";
+import SubmitButton from "../CustomComp/SubmitButton";
+import ReviewModal from "./ReviewModal";
+import $ from 'jquery'
 
 const EventDetails = () => {
   let api = useFetch();
+  const userData = sessionStorage.getItem("userData");
+  if (userData !== null) {
+    var userId = JSON.parse(userData).UserId
+  }
   const [eventList, setEventList] = React.useState([]);
   const [reviewList, setReviewList] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const getEventList = async () => {
-    let eventUrl = `/api/LoadEventDetails?Code=0`;
+    let eventUrl = `/api/LoadEventDetails?Code=0&WI=1&Ucode=${userId}`;
     try {
       setLoading(true);
       let { res, got } = await api(eventUrl, "GET", "");
@@ -34,6 +41,7 @@ const EventDetails = () => {
   };
   const handleClick = (code) => {
     console.log(`Clicked code: ${code}`);
+    $("#add_task").modal("show");
     // const selectedItem = eventList.find(item => item.code == code)
    
     // console.log('selected',selectedItem)
@@ -67,6 +75,7 @@ const EventDetails = () => {
 
   return (
     <div className="page-wrapper">
+      <ReviewModal reviewList={reviewList}/>
       <Helmet>
         <title>Event - Event&Management</title>
         <meta name="description" content="Event Page" />
@@ -99,7 +108,7 @@ const EventDetails = () => {
             {eventList.map((item, i) => {
               return (
                 <>
-                  <div className="col-lg-6 col-12 mb-4" key={i}>
+                  <div className="col-lg-12 col-12 mb-4" key={i}>
                     <div className="card">
                       <section className="comp-section" id="comp_tabs">
                         <div className="card-body">
@@ -119,8 +128,8 @@ const EventDetails = () => {
                               <a
                                 className="nav-link"
                                 //   href="#basictab2"
-                                href={`#basictab2${i}`}
-                                data-bs-toggle="tab"
+                                // href={`#basictab2${i}`}
+                                // data-bs-toggle="tab"
                                 onClick={() => {
                                   handleClick(item.code);
                                 }}
@@ -138,17 +147,20 @@ const EventDetails = () => {
                                 <div className="event_img mb-2">
                                   <Base64ImageConverter
                                     base64String={item.img}
+                                    style={{
+                                      objectFit: "fill",
+                                      height: "88vh",
+                                      
+                                      // width: "100px",
+                                      // borderRadius: "50%",
+                                    }}
                                   />
                                 </div>
                                 <div className="event_about mb-2">
                                   <h4>Event Description</h4>
                                   <p className="mb-5">{item.det}</p>
                                 </div>
-                                {/* 
-                          <div className="event_about">
-                            <h4>Event’s Objectives</h4>
-                            <p className="mb-5"></p>
-                          </div> */}
+                                
 
                                 <div className="event_about event_details mb-2 p-0">
                                   <h4>Event Details</h4>
@@ -177,134 +189,11 @@ const EventDetails = () => {
                                   </ul>
                                 </div>
                               </div>
+                              {/* <SubmitButton btnName="Review" onClick={() => {
+                                  handleClick(item.code);
+                                }}/> */}
                             </div>
-                            <div className="tab-pane" id={`basictab2${i}`}>
-                              {/* coming soon........ */}
-                              <div>
-                                {reviewList.map((obj)=>{
-                                    return(
-                                        <>
-                                        
-                              <div className="event_ccontent">
-                                <div className="event_about event_details mb-2 p-0">
-                                  <h5>Review By :-  <span style={{color:'blue'}}>{obj.name}</span></h5>
-                                  <ul className="">
-                                  {/* <li>
-                                      <span> Name : </span>
-                                      {obj.name}
-                                    </li> */}
-                                    <li>
-                                      <span> Description : </span>
-                                      {obj.desc}
-                                    </li>
-                                    <li>
-                                      <span>Mobile No. : </span>
-                                      {obj.mobNo}
-                                    </li>
-                                   
-                                    <li>
-                                      <span>Remark : </span>
-                                      {obj.remark}
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                                       
-                                        </>
-                                    )
-                                })}
-                                
-                                {/* <svg
-                                  class="bike"
-                                  viewBox="0 0 48 30"
-                                  width="48px"
-                                  height="30px"
-                                >
-                                  <g
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="1"
-                                  >
-                                    <g transform="translate(9.5,19)">
-                                      <circle
-                                        class="bike__tire"
-                                        r="9"
-                                        stroke-dasharray="56.549 56.549"
-                                      />
-                                      <g
-                                        class="bike__spokes-spin"
-                                        stroke-dasharray="31.416 31.416"
-                                        stroke-dashoffset="-23.562"
-                                      >
-                                        <circle class="bike__spokes" r="5" />
-                                        <circle
-                                          class="bike__spokes"
-                                          r="5"
-                                          transform="rotate(180,0,0)"
-                                        />
-                                      </g>
-                                    </g>
-                                    <g transform="translate(24,19)">
-                                      <g
-                                        class="bike__pedals-spin"
-                                        stroke-dasharray="25.133 25.133"
-                                        stroke-dashoffset="-21.991"
-                                        transform="rotate(67.5,0,0)"
-                                      >
-                                        <circle class="bike__pedals" r="4" />
-                                        <circle
-                                          class="bike__pedals"
-                                          r="4"
-                                          transform="rotate(180,0,0)"
-                                        />
-                                      </g>
-                                    </g>
-                                    <g transform="translate(38.5,19)">
-                                      <circle
-                                        class="bike__tire"
-                                        r="9"
-                                        stroke-dasharray="56.549 56.549"
-                                      />
-                                      <g
-                                        class="bike__spokes-spin"
-                                        stroke-dasharray="31.416 31.416"
-                                        stroke-dashoffset="-23.562"
-                                      >
-                                        <circle class="bike__spokes" r="5" />
-                                        <circle
-                                          class="bike__spokes"
-                                          r="5"
-                                          transform="rotate(180,0,0)"
-                                        />
-                                      </g>
-                                    </g>
-                                    <polyline
-                                      class="bike__seat"
-                                      points="14 3,18 3"
-                                      stroke-dasharray="5 5"
-                                    />
-                                    <polyline
-                                      class="bike__body"
-                                      points="16 3,24 19,9.5 19,18 8,34 7,24 19"
-                                      stroke-dasharray="79 79"
-                                    />
-                                    <path
-                                      class="bike__handlebars"
-                                      d="m30,2h6s1,0,1,1-1,1-1,1"
-                                      stroke-dasharray="10 10"
-                                    />
-                                    <polyline
-                                      class="bike__front"
-                                      points="32.5 2,38.5 19"
-                                      stroke-dasharray="19 19"
-                                    />
-                                  </g>
-                                </svg> */}
-                                {/* Coming Soon-- */}
-                              </div>
-                            </div>
+                            
                           </div>
                         </div>
                       </section>

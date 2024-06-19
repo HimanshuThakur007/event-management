@@ -237,6 +237,7 @@ i.eye-icon.eye-on-pswd.pe-4 {
 }
 /* ------------loader by me------------- */
 
+
 .loader-box {
 	display: flex;
 	justify-content: center;
@@ -253,8 +254,6 @@ i.eye-icon.eye-on-pswd.pe-4 {
 	right: 0;
 	margin: auto;
 	z-index: 100;
-
-
 }
   /* ------------------------------------------------ */
 

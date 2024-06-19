@@ -5,7 +5,7 @@ import { Table } from "antd";
 import "../antdstyle.css";
 import { itemRender, onShowSizeChange } from "../paginationfunction";
 import { MdOutlinePublish } from "react-icons/md";
-import { SiMicrosoftexcel } from 'react-icons/si'
+import { SiMicrosoftexcel } from "react-icons/si";
 import { avatar11, avatar10 } from "../imagepath";
 import SubmitButton from "../CustomComp/SubmitButton";
 import InputSelect from "../CustomComp/InputSelect";
@@ -36,7 +36,7 @@ import InputSearch from "../CustomComp/InputSearch";
 // };
 
 const SiteWiseFeedBack = () => {
-  let iconStyles = { color: "#10793F", cursor:'pointer'};
+  let iconStyles = { color: "#10793F", cursor: "pointer" };
   let api = useFetch();
   function getRandomColor() {
     const letters = "0123456789ABCDEF";
@@ -46,9 +46,12 @@ const SiteWiseFeedBack = () => {
     }
     return color;
   }
- 
-  const [searchText, setSearchText] = React.useState("");
 
+  const [searchText, setSearchText] = React.useState("");
+  const userData = sessionStorage.getItem("userData");
+  if (userData !== null) {
+    var userId = JSON.parse(userData).UserId;
+  }
   const DataType = [
     { value: 1, label: "Event" },
     { value: 2, label: "Template" },
@@ -65,8 +68,10 @@ const SiteWiseFeedBack = () => {
       sorter: (a, b) => a.name.length - b.name.length,
       filteredValue: [searchText],
       onFilter: (value, record) => {
-        return String(record.mobNo).toLowerCase().includes(value.toLowerCase())||
-        String(record.name).toLowerCase().includes(value.toLowerCase())
+        return (
+          String(record.mobNo).toLowerCase().includes(value.toLowerCase()) ||
+          String(record.name).toLowerCase().includes(value.toLowerCase())
+        );
       },
       render: (text, record) => <span className="text-primary">{text}</span>,
     },
@@ -105,7 +110,12 @@ const SiteWiseFeedBack = () => {
       dataIndex: "remark",
       render: (text, record) => <span style={{ color: "black" }}>{text}</span>,
     },
-    { title: "Average Rating", dataIndex: "avgrating", align: "center",  render: (text, record) => <span >{text.toFixed(1)}</span>, },
+    {
+      title: "Average Rating",
+      dataIndex: "avgrating",
+      align: "center",
+      render: (text, record) => <span>{text.toFixed(1)}</span>,
+    },
     { title: "Resolved SMS", dataIndex: "msg" },
   ];
   const [selectedValues, setSelectedValues] = React.useState({
@@ -130,13 +140,12 @@ const SiteWiseFeedBack = () => {
   const [tableDataList, setTableDataList] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
 
-  
   // ===================Event-List========================
   const getEventList = async () => {
     let currData = [];
-    let addobj = {label:"All", value:0}
-    currData[0]=addobj
-    let eventUrl = `/api/LoadEventDetails?Code=0`;
+    let addobj = { label: "All", value: 0 };
+    currData[0] = addobj;
+    let eventUrl = `/api/LoadEventDetails?Code=0&WI=0&Ucode=${userId}`;
     try {
       setLoading(true);
       let { res, got } = await api(eventUrl, "GET", "");
@@ -161,8 +170,8 @@ const SiteWiseFeedBack = () => {
   // ===================Template-List========================
   const getTemplateList = async () => {
     let currData = [];
-    let addobj = {label:"All", value:0}
-    currData[0]=addobj
+    let addobj = { label: "All", value: 0 };
+    currData[0] = addobj;
     let eventUrl = `/api/LoadTemplateDetails?Code=0`;
     try {
       setLoading(true);
@@ -206,7 +215,9 @@ const SiteWiseFeedBack = () => {
             dataIndex: `q${ind + 1}`,
             align: "center",
             render: (text, render) => (
-              <span className="" style={{color:"blue"}}>{text}</span>
+              <span className="" style={{ color: "blue" }}>
+                {text}
+              </span>
             ),
           });
         });
@@ -231,8 +242,8 @@ const SiteWiseFeedBack = () => {
   const getMainTableDataList = async () => {
     // let eventUrl = `/api/SiteWiseFeedBack?Code=1&Type=1&dt1=2023-01-01&dt2=2023-12-01`;
     let eventUrl = `/api/SiteWiseFeedBack?Code=${
-      tempCode || enevtCode || 0
-    }&Type=${typeCode}&Site=${siteCode}&dt1=${sdate}&dt2=${edate}`;
+      tempCode || enevtCode
+    }&Type=${typeCode}&Site=${siteCode}&dt1=${sdate}&dt2=${edate}&User=${userId}`;
     console.log("url", eventUrl);
     try {
       setLoading(true);
@@ -255,9 +266,9 @@ const SiteWiseFeedBack = () => {
 
   const getSiteList = async () => {
     let corrData = [];
-    let addobj = {label:"All", value:0}
-    corrData[0]=addobj
-    let Url = `/api/LoadMasterDetails1?code=0&MasterType=100`;
+    let addobj = { label: "All", value: 0 };
+    corrData[0] = addobj;
+    let Url = `/api/LoadReportingSites?User=${userId}`;
     try {
       setLoading(true);
       let { res, got } = await api(Url, "GET", "");
@@ -300,18 +311,16 @@ const SiteWiseFeedBack = () => {
     setSelectedValues
   ) => {
     // console.log(`Selected value for ${selectName}:`, selectedOption);
+if(selectName === "select1"){
+  setTypeCode(selectedOption.value)
+}else if(selectName === "select2"){
+  setEventCode(selectedOption.value)
+}else if(selectName === "select3"){
+  setTempCode(selectedOption.value)
+}else if(selectName === "select4"){
+  setSiteCode(selectedOption.value)
+}
 
-    {
-      selectName == "select1"
-        ? setTypeCode(selectedOption.value)
-        : selectName == "select2"
-        ? setEventCode(selectedOption.value)
-        : selectName == "select3"
-        ? setTempCode(selectedOption.value)
-        : selectName == "select4"
-        ? setSiteCode(selectedOption.value)
-        : null;
-    }
 
     setSelectedValues((prevSelectedValues) => ({
       ...prevSelectedValues,
@@ -325,11 +334,10 @@ const SiteWiseFeedBack = () => {
       .addSheet("test")
       .addColumns(columns)
       .addDataSource(tableDataList, {
-        str2Percent: true
+        str2Percent: true,
       })
       .saveAs("FeedBack.xlsx");
   };
-
 
   return (
     <div className="page-wrapper">
@@ -394,7 +402,9 @@ const SiteWiseFeedBack = () => {
                         selectName="Event"
                         selectClass="col-lg-12"
                         placeholder="event"
-                        value={selectedValues.select2||{label:"All", value:0}}
+                        value={
+                          selectedValues.select2 || { label: "All", value: 0 }
+                        }
                         onChange={(selectedOption) =>
                           handleSelectChange(
                             selectedOption,
@@ -410,7 +420,9 @@ const SiteWiseFeedBack = () => {
                         selectName="Template"
                         selectClass="col-lg-12"
                         placeholder="Template"
-                        value={selectedValues.select3||{label:"All", value:0}}
+                        value={
+                          selectedValues.select3 || { label: "All", value: 0 }
+                        }
                         onChange={(selectedOption) =>
                           handleSelectChange(
                             selectedOption,
@@ -428,7 +440,9 @@ const SiteWiseFeedBack = () => {
                       selectName="Site"
                       selectClass="col-lg-12"
                       placeholder="Site"
-                      value={selectedValues.select4 ||{label:"All", value:0}}
+                      value={
+                        selectedValues.select4 || { label: "All", value: 0 }
+                      }
                       onChange={(selectedOption) =>
                         handleSelectChange(
                           selectedOption,
@@ -495,25 +509,29 @@ const SiteWiseFeedBack = () => {
           <div className="col-md-12">
             <div className="card mb-0">
               <div className="card-header">
-              <div className="col-xl-12 d-flex justify-content-between">
-                <h4 className="card-title d-flex mb-0">
-                  <span className="mt-1">
-                  {typeCode == 1 ? "Event Contacts" : "Template Contacts"}
+                <div className="col-xl-12 d-flex justify-content-between">
+                  <h4 className="card-title d-flex mb-0">
+                    <span className="mt-1">
+                      {typeCode == 1 ? "Event Contacts" : "Template Contacts"}
+                    </span>
+                    <span className="ml-5">
+                      <InputSearch
+                        search1={setSearchText}
+                        search2={setSearchText}
+                      />
+                    </span>
+                  </h4>
+                  <span onClick={handleExportClick}>
+                    <SiMicrosoftexcel size={25} style={iconStyles} />
                   </span>
-                  <span className="ml-5">
-                  <InputSearch search1={setSearchText} search2={setSearchText}/>
-                  </span>
-                </h4>
-                <span onClick={handleExportClick}><SiMicrosoftexcel size={25} style={iconStyles}/></span>
-              </div>
+                </div>
               </div>
               <div className="card-body">
-              {/* <div className="col-xl-12 d-flex justify-content-end">
+                {/* <div className="col-xl-12 d-flex justify-content-end">
                     <button className="btn btn-primary" onClick={handleExportClick}>Export</button>
                     
                   </div> */}
                 <div className="table-responsive">
-               
                   <Table
                     className="table table-striped table-nowrap custom-table mb-0 datatable dataTable no-footer"
                     // rowSelection={rowSelection}

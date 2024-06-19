@@ -10,7 +10,7 @@ const AppRouter = (props) => {
     // let url = '210.89.34.139';
     // let port = '105'
 
-    let url = '103.25.128.155';
+    let url = '103.194.9.31';
     let port = '204'
 
     let serverUrl = '220.158.164.186';

@@ -8,7 +8,7 @@ import ReactLoader from "../CustomComp/ReactLoader";
 import useFetch from "../Hooks/useFetch";
 import ReactToast, { showToastError, showToastMessage } from '../CustomComp/ReactToast';
 
-
+var navData=[]
 const Login =(props)=> {
   const history = useHistory();
   var [captcha, setCaptcha] = useState("");
@@ -24,6 +24,7 @@ const[port, setPort] = useState('')
     password:""
  })
  const [loading, setLoading] = useState(false)
+ const [sideBarAddress, setSideBarAddress] = useState([])
 
 //  ---------compCode Api----------------
 
@@ -108,15 +109,52 @@ const   ValidateCaptcha = async (event) => {
 
 
 const {username, password} = inputValue
-// let api = useFetch()
-// const checkInput = (e) => {
-//   const onlyDigits = e.target.value.replace(/\D/g, "");
-//   setNumber(onlyDigits);
-// };
 let user = username.slice(0,10)
-     
+let api = useFetch();
 
-const handleSubmit = (e)=>{
+const getDynamicNavbarList = async (code) => {
+  let Url = `/api/LoadUserMenuTree?UserCode=${code}`;
+  try {
+    setLoading(true);
+    let { res, got } = await api(Url, "GET", "");
+    if (res.status == 200) {
+      console.log("sideNavData", JSON.stringify(got));
+       navData = got;
+      // getAllAddresses(navData)
+      setSideBarAddress(navData);
+      setLoading(false);
+    } else {
+      setLoading(false);
+      alert("Something Went Wrong in List loading");
+    }
+  } catch (err) {
+    setLoading(false);
+    alert(err);
+  }
+};
+
+function getAllAddresses(data) {
+  const addresses = [];
+
+  function traverse(node, parentAddress = "") {
+    const currentAddress = parentAddress + node.address;
+    addresses.push(currentAddress);
+
+    if (node.children && node.children.length > 0) {
+      node.children.forEach((child) => {
+        traverse(child, currentAddress);
+      });
+    }
+  }
+
+  data.forEach((item) => {
+    traverse(item);
+  });
+ console.log(addresses,"aaadddtttt")
+  return addresses;
+}
+
+const handleSubmit =  (e)=>{
   // console.log('calling')
   e.preventDefault()
 
@@ -138,7 +176,7 @@ const handleSubmit = (e)=>{
 
     fetch(myRequest).then((response) => response.json())
    
-    .then((json) => {
+    .then(async(json) => {
         const resultData = json
         // console.log('loginDataaaaa',resultData)
         const loginData = resultData
@@ -156,28 +194,36 @@ const handleSubmit = (e)=>{
           let ProjType = loginData.ProjType
           // StoreData.push({UserId,UserType,Admin,TokenId,department,depName})
           sessionStorage.setItem("userData", JSON.stringify({UserId,UserType,Admin,TokenId,Type,Email,department,depName,ProjType}));
+          const userData = sessionStorage.getItem("userData");
+          if (userData !== null) {
+            var code = JSON.parse(userData).UserId
+          }
+          await getDynamicNavbarList(code)
+          console.log("sssaaadddd",sideBarAddress)
           setLoading(false);
       
-    history.push('/')
-  //  window.location.reload()
+          const addresses = getAllAddresses(navData); // Assuming `navData` contains the fetched dynamic navbar data
+          const homeAddress = addresses.find((address) => address.includes("/"));
 
-        }else{
-          alert(loginData.msg)
+          if (homeAddress) {
+            history.push(homeAddress);
+          } else if (addresses.length > 0) {
+            // Push to the first address found
+            history.push(addresses[0]);
+          } else {
+            console.log("No address found in navbar data");
+          }
+        } else {
+          alert(loginData.msg);
+          setLoading(false);
         }
-        setLoading(false)
-        // setSerieslist(json.data)
-    });
+      })
   } catch (err) {
     alert(err) 
     setLoading(false)
     //  setLoading(false)
     }
-
-
 }
-
-
-
   return(
 <>
   {/* Main Wrapper */}
@@ -216,64 +262,15 @@ const handleSubmit = (e)=>{
                   <div className="col">
                     <label>Password</label>
                   </div>
-                  {/* <div className="col-auto">
-                    <Link className="text-muted" to="/forgot-password">
-                      Forgot password?
-                    </Link>
-                  </div> */}
+                 
                 </div>
-                <input className="form-control" autoComplete="off" name="password" type="password" onChange={handleInputField} required/>
+                <input className="form-control" value={password} autoComplete="off" name="password" type="password" onChange={handleInputField} required/>
               </div>
-              {/* <div className="form-group">
-                <div className="row">
-                  <img
-                    onClick={renderCaptcha}
-                    src="./assets/icons8-refresh-30.png"
-                    alt="refresh"
-                    style={{ cursor: "pointer", width:'15%' }}
-                    className="ml-0"
-                  />
-      
-                </div>
-              
-              </div> */}
-              {/* <div className="form-group">
-                <div className="row">
-            
-                  <img
-                    src={cap_uri}
-                    style={{ margin: "0 auto", width:'40%' }}
-                    className="img-thumbnail captcha"
-                  />
-            
-                </div>
-              
-              </div> */}
-              {/* <div className="form-group">
-                <div className="row">
-                  <div className="col">
-                    <label>Password</label>
-                  </div>
-                  
-                </div>
-                <input
-                  placeholder="Enter Captcha"
-                  onChange={saveCaptchaValue}
-                  className="form-control p-4 pr-1 pl-1"
-                />
-              </div> */}
               <div className="form-group text-center">
-                {/* <Link to="/" className="btn btn-primary account-btn">
-                  Login
-                </Link> */}
+              
                 <button type='submit' className="btn btn-primary account-btn" >Login</button>
               </div>
-              {/* <div className="account-footer">
-                <p>
-                  Don't have an account yet?{" "}
-                  <Link to="/register">Register</Link>
-                </p>
-              </div> */}
+             
             </form>
             {/* /Account Form */}
           </div>

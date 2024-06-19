@@ -33,7 +33,7 @@ const EventPage = (props) => {
           />
           {/* /Page Header */}
 
-          <CardComp cardTitle="Purpose Form" cardBodyTitle="">
+          <CardComp cardTitle="Event Type" cardBodyTitle="">
             <form onSubmit={props.saveHandler}>
               <div className="row">
                 <div className="col-xl-8">

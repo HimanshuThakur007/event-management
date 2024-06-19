@@ -9,7 +9,7 @@ import ReactTagsInput from '../tags.jsx';
 
 // import "../../../assets/js/ckeditor.js"
 
-const id = "editor";
+// const id = "editor";
 
 const	category=[
             {label : "Productivity",value : 1},

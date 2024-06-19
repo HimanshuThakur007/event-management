@@ -4,17 +4,11 @@ import { Link } from "react-router-dom";
 import { Table } from "antd";
 import "../antdstyle.css";
 import { itemRender, onShowSizeChange } from "../paginationfunction";
-import { MdOutlinePublish } from "react-icons/md";
-import { FiTrash2 } from "react-icons/fi";
-import { avatar11, avatar10 } from "../imagepath";
 import SubmitButton from "../CustomComp/SubmitButton";
-import InputSelect from "../CustomComp/InputSelect";
 import DateTimeInput, {
-  convert,
   convertDate,
 } from "../CustomComp/DateTimeInput";
 import useFetch from "../Hooks/useFetch";
-// import ReviewComp from "./ReviewComp";
 import ReactToast, {
   showToastError,
   showToastMessage,
@@ -22,6 +16,7 @@ import ReactToast, {
 import ReactLoader from "../CustomComp/ReactLoader";
 import { SiMicrosoftexcel } from "react-icons/si";
 import InputSearch from "../CustomComp/InputSearch";
+import { Excel } from "antd-table-saveas-excel";
 
 const BirthDayReport = () => {
   const mergeValue = new Set();
@@ -29,81 +24,19 @@ const BirthDayReport = () => {
   React.useEffect(() => {
     mergeValue.clear();
   }, []);
-
   let api = useFetch();
 
-  const [selectedValues, setSelectedValues] = React.useState({
-    select1: null,
-    select2: null,
-    select3: null,
-  });
-  var date = new Date(),
-    mnth = ("0" + date.getMonth()).slice(-2),
-    day = ("0" + date.getDate()).slice(-2);
-  let updatedData = [date.getFullYear(), mnth, day].join("/");
-
-  console.log(new Date(updatedData), "date");
   const [dates, setDates] = React.useState({
     date1: new Date(),
     date2: new Date(),
   });
-
   let sdate = convertDate(dates.date1);
   let edate = convertDate(dates.date2);
   const [tableDataList, setTableDataList] = React.useState([]);
   const [selectedRows, setSelectedRows] = React.useState([]);
+  const [searchText, setSearchText] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  // ===================Event-List========================
-  //   const getEventList = async () => {
-  //     let currData =[]
-  //     let eventUrl = `/api/LoadEventDetails?Code=0`;
-  //     try {
-  //       // setLoading(true);
-  //       let { res, got } = await api(eventUrl, "GET", "");
-  //       if (res.status == 200) {
-  //         let list = got.data;
-
-  //         // console.log("llllist3", list);
-  //         list.forEach((item)=>{
-  //           currData.push({value:item.code,label:item.name})
-  //         })
-  //         setEventList(currData);
-  //         setLoading(false);
-  //       } else {
-  //         setLoading(false);
-  //         alert("Something Went Wrong in List loading");
-  //       }
-  //     } catch (err) {
-  //       setLoading(false);
-  //       alert(err);
-  //     }
-  //   };
-  // ===================Event-List========================
-  //   const getTemplateList = async () => {
-  //     let currData =[]
-  //     let eventUrl = `/api/LoadTemplateDetails?Code=0`;
-  //     try {
-  //       setLoading(true);
-  //       let { res, got } = await api(eventUrl, "GET", "");
-  //       if (res.status == 200) {
-  //         let list = got.data;
-
-  //         // console.log("llllist3", list);
-  //         list.forEach((item)=>{
-  //           currData.push({value:item.code,label:item.name})
-  //         })
-  //         setTemplateList(currData);
-  //         setLoading(false);
-  //       } else {
-  //         setLoading(false);
-  //         alert("Something Went Wrong in List loading");
-  //       }
-  //     } catch (err) {
-  //       setLoading(false);
-  //       alert(err);
-  //     }
-  //   };
-
+ 
   const getTableDataList = async () => {
     let eventUrl = `/api/CustomerBirthdayReport?SDate=${sdate}&EDate=${edate}`;
     // console.log("url", eventUrl)
@@ -138,35 +71,12 @@ const BirthDayReport = () => {
     });
   };
 
-  // -----multiple-Select-----------------------
-  //    const handleSelectChange = (selectedOption, selectName, setSelectedValues) => {
-
-  //     // console.log(`Selected value for ${selectName}:`, selectedOption);
-
-  //  {
-  //   selectName == "select1" ? setTypeCode(selectedOption.value):
-  //   selectName == 'select2'?setEventCode(selectedOption.value):
-  //   selectName == 'select3'?setTempCode(selectedOption.value):
-  //   null
-  //  }
-
-  //     setSelectedValues((prevSelectedValues) => ({
-  //       ...prevSelectedValues,
-  //       [selectName]: selectedOption,
-  //     }));
-  //   };
-
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      //   console.log(
-      //     `selectedRowKeys: ${selectedRowKeys}`,
-      //     "selectedRows: ",
-      //     selectedRows
-      //   );
       setSelectedRows(selectedRows);
     },
     getCheckboxProps: (record) => ({
-      disabled: record.name === "Disabled User", // Column configuration not to be checked
+      disabled: record.name === "Disabled User",
       name: record.name,
       className: "checkbox-red",
     }),
@@ -177,36 +87,42 @@ const BirthDayReport = () => {
     e.preventDefault();
     var currData = [];
     selectedRows.forEach((item) => {
-      // console.log(item,'iiiii45')
       currData.push({ CustomerName: item.name, MobNo: item.mobno, Rate: 0 });
     });
-
     const urlCustomer = "/api/SendWhatsapp";
-
     var body = {
       WhatsappType: 2,
       SendWhatsappList: [...currData],
     };
-    console.log("bodyjson", JSON.stringify(body));
+    // console.log("bodyjson", JSON.stringify(body));
     try {
       setLoading(true);
       let { res, got } = await api(urlCustomer, "POST", body);
       if (res.status == 200) {
         console.log("maindata", got);
         // console.log("rrrr$", res);
-        showToastMessage(got.msg);
-
+        showToastMessage(got.errorMsg);
+        getTableDataList()
+        setSelectedRows([])
         setLoading(false);
       } else {
         setLoading(false);
-        showToastError(got.msg);
+        showToastError(got.errorMsg);
       }
     } catch (error) {
       setLoading(false);
       showToastError(error);
     }
   };
-  const [searchText, setSearchText] = React.useState("");
+
+  function getRandomColor() {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
 
   const columns = [
     {
@@ -244,6 +160,15 @@ const BirthDayReport = () => {
       dataIndex: "site",
       render: (text, record) => <>{text}</>,
     },
+    {
+      title: "Delivered Status",
+      dataIndex: "status",
+      render: (text, record) => (
+        <span className="badge" style={{ background: getRandomColor() }}>
+          {text}
+        </span>
+      ),
+    },
   ];
 
   const handleExportClick = () => {
@@ -267,6 +192,7 @@ const BirthDayReport = () => {
         <title>Customer BDay - EventManagement</title>
         <meta name="description" content="Review page" />
       </Helmet>
+
       <div className="content container-fluid">
         {loading ? (
           <ReactLoader loaderClass="position-absolute" loading={loading} />
@@ -299,7 +225,7 @@ const BirthDayReport = () => {
             <div className="card">
               <div className="card-body">
                 <div className="row pt-2">
-                  <div className="col-xl-6">
+                  <div className="col-xl-5">
                     <DateTimeInput
                       datelblClass=""
                       dateinpClass="col-lg-12"
@@ -310,7 +236,7 @@ const BirthDayReport = () => {
                       onChange={(date) => handleDateChange("date1", date)}
                     />
                   </div>
-                  <div className="col-xl-6">
+                  <div className="col-xl-5">
                     <DateTimeInput
                       datelblClass=""
                       dateinpClass="col-lg-12"
@@ -321,7 +247,7 @@ const BirthDayReport = () => {
                       onChange={(date) => handleDateChange("date2", date)}
                     />
                   </div>
-                  {/* <div
+                  <div
                     className="col-xl-2"
                     style={{
                       display: "flex",
@@ -336,7 +262,7 @@ const BirthDayReport = () => {
                         btnName="Load Data"
                       />
                       </div>
-                    </div> */}
+                    </div>
                 </div>
               </div>
             </div>
@@ -385,7 +311,7 @@ const BirthDayReport = () => {
                     }}
                     columns={columns}
                     dataSource={tableDataList}
-                    rowKey={(record) => record.mobno}
+                    rowKey={(record,index) => index}
                   />
                 </div>
                 <div className="col-xl-12 mb-2">

@@ -2,138 +2,53 @@ import React from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import PieChart from "./piechart";
-import HorizontalBarChart from "./barchart/horizontalchart";
-import BarChart from "./barchart";
-import LineChart from "./linechart";
-import SingleChart from "./linechart/singlelinechart";
-import TotalRevenuechart from "./barchart/totalreveue";
-import Salesstatictschart from "./barchart/salesstatistics";
-import Completedtaskchart from "./barchart/completedtaks";
-import PieChart2 from "./piechart/piechart2";
-import DoughnutChart from "./piechart/piechart2";
-import DoughnutChart1 from "./piechart/piechart3";
-import { BiUser } from "react-icons/bi";
 import useFetch from "../Hooks/useFetch";
 import VerticalBarChart from "./verticalbarchart/VerticalBarChart";
 import { convertDate } from "../CustomComp/DateTimeInput";
+import ReactLoader from "../CustomComp/ReactLoader";
 
+var eventCount;
+var templateCount;
+var contactCount;
 const Dashboard = () => {
   let api = useFetch();
   const userDatas = JSON.parse(sessionStorage.getItem("userData"));
-  const [eventList, setEventList] = React.useState(0);
-  const [templateList, setTemplateList] = React.useState(0);
-  const [tableDataList, setTableDataList] = React.useState([]);
-  const [startDate, setStartDate] = React.useState('');
-  const [endDate, setEndDate] = React.useState('');
-  React.useEffect(() => {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-
-    // Set start date to January 1st of the current year
-    const startDate = new Date(currentYear, 0, 1);
-    const formattedStartDate = convertDate(startDate)
-    setStartDate(formattedStartDate);
-
-    // Set end date to December 31st of the current year
-    const endDate = new Date(currentYear, 11, 31);
-    const formattedEndDate = convertDate(endDate)
-    setEndDate(formattedEndDate);
-
-    getTableDataList(startDate,endDate)
-  }, []);
-  console.log("ssssdate",startDate,endDate)
-  const getEventList = async () => {
-    let eventUrl = `/api/LoadEventDetails?Code=0`;
-    try {
-      // setLoading(true);
-      let { res, got } = await api(eventUrl, "GET", "");
-      if (res.status == 200) {
-        let list = got.data;
-        setEventList(list.length);
-        // console.log('llllist43', list)
-        // setLoading(false);
-      } else {
-        // setLoading(false);
-        alert("Something Went Wrong in List loading");
-      }
-    } catch (err) {
-      // setLoading(false);
-      alert(err);
-    }
-  };
-
-  const getTemplateList = async () => {
-    let eventUrl = `/api/LoadTemplateDetails?Code=0`;
-    try {
-      // setLoading(true);
-      let { res, got } = await api(eventUrl, "GET", "");
-      if (res.status == 200) {
-        let list = got.data;
-        setTemplateList(list.length);
-        // console.log("llllist43", list);
-        // setLoading(false);
-      } else {
-        // setLoading(false);
-        alert("Something Went Wrong in List loading");
-      }
-    } catch (err) {
-      // setLoading(false);
-      alert(err);
-    }
-  };
-
-  const getTableDataList = async (startDate,endDate) => {
-    let sDate=convertDate(startDate);
-    let eDate=convertDate(endDate)
-    let eventUrl = `/api/EventCustomerList?FDate=${sDate}&EDate=${eDate}`;
-    console.log("url", eventUrl)
-    try {
-      // setLoading(true);
-      let { res, got } = await api(eventUrl, "GET", "");
-      if (res.status == 200) {
-        let list = got.data;
-
-        console.log("contactList", list);
-        setTableDataList(list.length);
-
-        // setTemplateList(currData);
-        // setLoading(false);
-      } else {
-        // setLoading(false);
-        alert("Something Went Wrong in List loading");
-      }
-    } catch (err) {
-      // setLoading(false);
-      alert(err);
-    }
-  };
+  // const [tableDataList, setTableDataList] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
   const [unHappier, setUnHappier] = React.useState([]);
   const [Happier, setHappier] = React.useState([]);
   const [overAll, setOverAll] = React.useState([]);
   const [reviewCount, setReviewCount] = React.useState(0);
+  // console.log("ssssdate",startDate,endDate)
+
+
+ 
+
+  var date = new Date();
+  var mnth;
+  var day;
+  var updatedData;
+  day = ("0" + date.getDate()).slice(-2);
+  console.log('datesss', date.getFullYear()-1)
+  if(date.getMonth() === 0){
+   mnth = ("0" + date.getMonth()+1).slice(-2)
+   updatedData = [2023, mnth, day].join("/");
+   console.log('upData', updatedData)
+  }else{
+   mnth = ("0" + date.getMonth()).slice(-2)
+   updatedData = [date.getFullYear(), mnth, day].join("/");
+   console.log('elsemmm', mnth)
+  }
+
 
   const dashBoardReport = async () => {
-    //   var unHappy=[];
-    // var Happy=[];
-    // var overall=[];
     let eventUrl = `/api/DashBoardReports`;
     // console.log("url", eventUrl)
     try {
-      // setLoading(true);
+      setLoading(true);
       let { res, got } = await api(eventUrl, "GET", "");
       if (res.status == 200) {
         let list = got.data;
-
-        console.log("DashboardData", list);
-        // list.map((item)=>{
-        //   return (
-        //     item.topunhappysite.map((unhappy)=>{
-        //       return(
-        //          unHappy.push({name:unhappy.sitename,data:unhappy.unhappyper})
-        //       )
-        //     })
-        //   )
-        // })
         let overall = list[0].overallhappy;
         let Happy = list[0].tophappysite;
         let unHappy = list[0].topunhappysite;
@@ -141,53 +56,48 @@ const Dashboard = () => {
         setUnHappier(unHappy);
         setHappier(Happy);
         setOverAll(overall);
-
-        // setTemplateList(currData);
-        // setLoading(false);
+        setLoading(false);
       } else {
-        // setLoading(false);
+        setLoading(false);
         alert("Something Went Wrong in List loading");
       }
     } catch (err) {
-      // setLoading(false);
+      setLoading(false);
       alert(err);
     }
   };
 
-  // ===========================total ReviewList====================================
-  const getreviewCount = async () => {
+  // ===========================Dashboard-count====================================
+  const getdashBoardCount = async () => {
     let eventUrl = `/api/ReturnTotalReviews`;
     try {
-      // setLoading(true);
+      setLoading(true);
       let { res, got } = await api(eventUrl, "GET", "");
       if (res.status == 200) {
         let list = got.data;
         let review = list[0].totalReviews
+        eventCount = list[0].totalEvents
+        templateCount = list[0].totalTemplates
+        contactCount=list[0].totalContacts
         setReviewCount(review)
-        console.log('llllist43', review)
-        // setLoading(false);
+        // console.log('llllist43', review)
+        setLoading(false);
       } else {
-        // setLoading(false);
+        setLoading(false);
         alert("Something Went Wrong in List loading");
       }
     } catch (err) {
-      // setLoading(false);
+      setLoading(false);
       alert(err);
     }
   };
 
   React.useEffect(() => {
     dashBoardReport();
-    getreviewCount()
+    getdashBoardCount();
   }, []);
 
-  React.useEffect(() => {
-    if (userDatas != null) {
-      
-      getEventList();
-      getTemplateList();
-    }
-  }, []);
+
   const datas = unHappier.map((obj) => obj.sitename);
   const per = unHappier.map((obj) => obj.unhappyper);
   const hdatas = Happier.map((obj) => obj.sitename);
@@ -198,6 +108,9 @@ const Dashboard = () => {
         <title>Dashboard- Event&Management</title>
         <meta name="description" content="Reactify Blank Page" />
       </Helmet>
+      {loading ? (
+          <ReactLoader loaderClass="position-absolute" loading={loading} />
+        ) : null}
       <div className="content container-fluid">
         <div className="crms-title row bg-white mb-4">
           <div className="col">
@@ -205,7 +118,7 @@ const Dashboard = () => {
               <span className="page-title-icon bg-gradient-primary text-white me-2">
                 <i className="fas fa-table"></i>
               </span>{" "}
-              <span>Event Dashboard</span>
+              <span>Dashboard</span>
             </h3>
           </div>
           <div className="col text-end">
@@ -213,7 +126,7 @@ const Dashboard = () => {
               <li className="breadcrumb-item">
                 <Link to="/">Dashboard</Link>
               </li>
-              <li className="breadcrumb-item active">Event Dashboard</li>
+              <li className="breadcrumb-item active">Dashboard</li>
             </ul>
           </div>
         </div>
@@ -288,7 +201,7 @@ const Dashboard = () => {
                 data-background="assets/img/bg/count-bg.png"
               ></div>
               <div className="expovent__count-content">
-                <h3 className="expovent__count-number">{eventList}+</h3>
+                <h3 className="expovent__count-number">{eventCount}+</h3>
                 <span className="expovent__count-text">Total Events</span>
               </div>
               <div className="expovent__count-icon">
@@ -303,7 +216,7 @@ const Dashboard = () => {
                 data-background="assets/img/bg/count-bg.png"
               ></div>
               <div className="expovent__count-content">
-                <h3 className="expovent__count-number">{templateList}+</h3>
+                <h3 className="expovent__count-number">{templateCount}+</h3>
                 <span className="expovent__count-text">Total Templates</span>
               </div>
               <div className="expovent__count-icon">
@@ -318,7 +231,7 @@ const Dashboard = () => {
                 data-background="assets/img/bg/count-bg.png"
               ></div>
               <div className="expovent__count-content">
-                <h3 className="expovent__count-number">{tableDataList}+</h3>
+                <h3 className="expovent__count-number">{contactCount}+</h3>
                 <span className="expovent__count-text">Total Contacts</span>
               </div>
               <div className="expovent__count-icon">

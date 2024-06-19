@@ -1,31 +1,18 @@
 import React from 'react';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
-import { Link } from 'react-router-dom/cjs/react-router-dom.min';
+import { Link, useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 // import 'react-pro-sidebar/dist/css/styles.css'; 
 import {
-  BiAward,
   BiBarChartAlt2,
   BiCalendarAlt,
   BiClipboard,
   BiBookContent,
   BiCog,
-  BiCoinStack,
-  BiCommand,
-  BiCube,
   BiUserPin,
   BiData,
-  BiDockLeft,
-  BiDockTop,
-  BiEnvelope,
-  BiError,
-  BiGridAlt,
   BiHomeAlt,
-  BiMenu,
   BiMobileAlt,
   BiCalendarEvent,
-  BiPodcast,
-  BiSearchAlt2,
-  BiStation,
   BiTask,
   BiUser,
 } from "react-icons/bi";
@@ -33,8 +20,14 @@ import { SiMastercomfig } from "react-icons/si";
 import { FiUserPlus } from "react-icons/fi";
 import {MdOutlineReviews} from "react-icons/md";
 import { VscGraph } from "react-icons/vsc";
+import { IoAdd } from "react-icons/io5";
+import { RiMenuAddLine } from "react-icons/ri";
+import { RxDot } from "react-icons/rx";
 
 const SidebarMenu = ({ menuItems }) => {
+  const location = useLocation();
+  let pathname = location.pathname;
+  // console.log("pathnamefromSidebar", pathname);
   const icons = {
     "<BiHomeAlt />": <BiHomeAlt />,
     "<BiCog />": <BiCog />,
@@ -52,17 +45,56 @@ const SidebarMenu = ({ menuItems }) => {
     "<MdOutlineReviews />":<MdOutlineReviews />,
     "<VscGraph />":<VscGraph />
   };
+  const childIcons = {
+    childValue1: <IoAdd />,
+    childValue2: <BiClipboard />,
+    // Define icons for each child item value as needed
+  };
   const renderMenu = (items) => {
     return items.map((item) => (
       <React.Fragment key={item.value}>
         {item.children && item.children.length > 0 ? (
-          // console.log('items444',item.label)
           <SubMenu icon={icons[item["imgPath"]]} label={item.label}>
-            {renderMenu(item.children)}
+            {renderSubMenu(item.children)}
           </SubMenu>
         ) : (
-          <MenuItem icon={icons[item["imgPath"]]} component={<Link to={item.address} />}>
-           {item.label}
+          <MenuItem 
+            icon={icons[item["imgPath"]]} 
+            component={<Link to={item.address} />}
+            style={{
+              backgroundColor: pathname === item.address ? 'blueviolet' : ' ',
+              color: pathname === item.address ? 'white' : 'black',
+              // Other styles
+            }}
+          >
+            {item.label}
+          </MenuItem>
+        )}
+      </React.Fragment>
+    ));
+  };
+
+  const renderSubMenu = (children) => {
+    return children.map((childItem) => (
+      <React.Fragment key={childItem.value}>
+        {childItem.children && childItem.children.length > 0 ? (
+          <SubMenu
+            icon={childIcons[childItem.value] || <RxDot />}
+            label={childItem.label}
+          >
+            {renderSubMenu(childItem.children)}
+          </SubMenu>
+        ) : (
+          <MenuItem
+            icon={childIcons[childItem.childValue1] || <RiMenuAddLine />}
+            component={<Link to={childItem.address} />}
+            style={{
+              backgroundColor: pathname === childItem.address ? 'blueviolet' : ' ',
+              color: pathname === childItem.address ? 'white' : 'black',
+              // Other styles
+            }}
+          >
+            {childItem.label}
           </MenuItem>
         )}
       </React.Fragment>
@@ -74,10 +106,11 @@ const SidebarMenu = ({ menuItems }) => {
     <div style={{ display: 'flex', height: '100%'}}>
     <Sidebar
     width='230px'
-    backgroundColor="#fff"
+    // backgroundColor="#fff"
     border='0px'
     >
-      <Menu iconShape="square">
+      <Menu iconShape="square"
+     >
         {renderMenu(menuItems)}
       </Menu>
       </Sidebar>

@@ -353,7 +353,7 @@ const [loading, setLoading] = React.useState(false);
                 <div className="col-md-12">
                   <div className="card">
                     <div className="card-header">
-                      <h4 className="card-title mb-0">Birthday Wisheses</h4>
+                      <h4 className="card-title mb-0">Birthday Wishes</h4>
                     </div>
                     <div className="card-body">
                       <div className="row">

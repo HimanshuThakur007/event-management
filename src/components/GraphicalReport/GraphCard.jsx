@@ -1,5 +1,6 @@
 import React from "react";
 import GraphicalChart from "./GraphicalPieChart";
+import './graphStyle.css';
 
 const GraphCard = (props) => {
   return (

@@ -34,10 +34,24 @@ const Contacts = () => {
     })
   };
   let api=useFetch();
-   var date = new Date(),
-    mnth = ("0" + date.getMonth()).slice(-2),
-    day = ("0" + date.getDate()).slice(-2);
-  let updatedData = [date.getFullYear(), mnth, day].join("/");
+   var date = new Date();
+   var mnth;
+   var day;
+   var updatedData;
+   day = ("0" + date.getDate()).slice(-2);
+   console.log('datesss', date.getFullYear()-1)
+   if(date.getMonth() === 0){
+    mnth = ("0" + date.getMonth()+1).slice(-2)
+    updatedData = [date.getFullYear()-1, mnth, day].join("/");
+    console.log('mmm', mnth)
+   }else{
+    mnth = ("0" + date.getMonth()).slice(-2)
+    updatedData = [date.getFullYear(), mnth, day].join("/");
+    console.log('elsemmm', mnth)
+   }
+
+  
+  console.log('updates', updatedData)
     const [dates, setDates] = React.useState({
     date1: new Date(updatedData),
     date2: new Date()
@@ -50,7 +64,6 @@ const Contacts = () => {
     });
     
 };
-  const [typeCode ,setTypeCode] = React.useState(0)
   const [searchText, setSearchText] = React.useState("");
   const [tableDataList, setTableDataList] = React.useState([]);
   const [loading, setLoading] = React.useState(false)
@@ -160,6 +173,8 @@ const Contacts = () => {
   
   ];
 
+  console.log('dddd',fdate)
+  console.log('dddd2',dates.date2)
 
 
   return (
@@ -283,7 +298,7 @@ const Contacts = () => {
                     }}
                     columns={columns}
                     dataSource={tableDataList}
-                    rowKey={(record) => record.code}
+                    rowKey={(index) => index}
                   />
                 </div>
               </div>

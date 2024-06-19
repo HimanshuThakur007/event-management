@@ -18,7 +18,6 @@ const InputSelect = (props) => {
             value={props.value}
             onChange={props.onChange}
             options={props.options}
-           
             required={props.required}
             isMulti={props.isMulti}
             styles={props.styles}

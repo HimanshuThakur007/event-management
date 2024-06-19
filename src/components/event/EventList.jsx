@@ -32,6 +32,11 @@ const EventList = () => {
   let history = useHistory();
   const [eventList, setEventList] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+
+  const userData = sessionStorage.getItem("userData");
+  if (userData !== null) {
+    var userId = JSON.parse(userData).UserId
+  }
   const navigateHandle = () => {
     history.push("/event-add");
   };
@@ -44,7 +49,7 @@ const EventList = () => {
   };
 
   const getEventList = async () => {
-    let eventUrl = `/api/LoadEventDetails?Code=0`;
+    let eventUrl = `/api/LoadEventDetails?Code=0&WI=0&Ucode=${userId}`;
     try {
       setLoading(true);
       let { res, got } = await api(eventUrl, "GET", "");
@@ -64,9 +69,39 @@ const EventList = () => {
     }
   };
 
+  const onDeleteRow = async(record)=>{
+    // setMasterType()
+    console.log('deleteCode',record.code)
+      // e.preventDefault();
+      let dataCode=record.code
+      const urlfollow = `/api/DeleteMasterTransaction?UCode=${userId}&MT=151004&Code=${dataCode}`;
+      console.log('deleteUrl', urlfollow)
+      var body = {};
+      // console.log("bodyjson", JSON.stringify(body));
+      try {
+        setLoading(true);
+        let { res, got } = await api(urlfollow, "POST", body);
+        if (res.status == 200) {
+          // console.log("maindata", body);
+          alert(got.msg);
+          getEventList()
+          setLoading(false);
+        } else {
+          setLoading(false);
+          alert(got.msg);
+        }
+      } catch (error) {
+        setLoading(false);
+        alert(error);
+      }
+  
+  }
+
   React.useEffect(() => {
     getEventList();
   }, []);
+
+  
   function getRandomColor() {
     const letters = "0123456789ABCDEF";
     let color = "#";
@@ -156,7 +191,7 @@ const EventList = () => {
             <a className="dropdown-item" onClick={() => onRowClick(record)}>
               Edit
             </a>
-            <a className="dropdown-item" href="#">
+            <a className="dropdown-item" onClick={()=>onDeleteRow(record)}>
               Delete
             </a>
           </div>
@@ -271,7 +306,14 @@ const EventList = () => {
             <div className="card mb-0">
               <div className="card-header">
                 <div className="col-xl-12 d-flex justify-content-between">
-                  <h4 className="card-title mb-0">Event List</h4>
+                  <h4 className="card-title d-flex mb-0">
+                  <span className="mt-1">
+                    Event List
+                    </span>
+                    <span className="ml-5">
+                    <InputSearch search1={setSearchText} search2={setSearchText}/>
+                    </span>
+                    </h4>
                   <span
                     onClick={eventList.length > 0 ? handleExportClick : null}
                   >
@@ -285,7 +327,7 @@ const EventList = () => {
                   </div> */}
                 <div className="table-responsive">
                   <div className="">
-                  <InputSearch search1={setSearchText} search2={setSearchText}/>
+                  
                   </div>
                   <Table
                     className="table"

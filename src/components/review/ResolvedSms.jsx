@@ -12,7 +12,7 @@ import DateTimeInput, {
 } from "../CustomComp/DateTimeInput";
 import useFetch from "../Hooks/useFetch";
 import ReviewComp from "./ReviewComp";
-import ReactToast from "../CustomComp/ReactToast";
+import ReactToast, { showToastMessage } from "../CustomComp/ReactToast";
 import ReactLoader from "../CustomComp/ReactLoader";
 import { Excel } from "antd-table-saveas-excel";
 import InputSearch from "../CustomComp/InputSearch";
@@ -60,6 +60,10 @@ const ResolvedSms = () => {
   const [siteList, setSiteList] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [searchText, setSearchText] = React.useState("");
+  const userData = sessionStorage.getItem("userData");
+  if (userData !== null) {
+    var userId = JSON.parse(userData).UserId
+  } 
 
   const customStyles = {
     control: (base) => ({
@@ -73,7 +77,7 @@ const ResolvedSms = () => {
     let currData = [];
     let addobj = { label: "All", value: 0 };
     currData[0] = addobj;
-    let eventUrl = `/api/LoadEventDetails?Code=0`;
+    let eventUrl = `/api/LoadEventDetails?Code=0&WI=0&Ucode=${userId}`;
     try {
       setLoading(true);
       let { res, got } = await api(eventUrl, "GET", "");
@@ -128,7 +132,7 @@ const ResolvedSms = () => {
     let corrData = [];
     let addobj = { label: "All", value: 0 };
     corrData[0] = addobj;
-    let Url = `/api/LoadMasterDetails1?code=0&MasterType=100`;
+    let Url = `/api/LoadReportingSites?User=${userId}`;
     try {
       setLoading(true);
       let { res, got } = await api(Url, "GET", "");
@@ -157,14 +161,16 @@ const ResolvedSms = () => {
     setTableDataList([]);
     let eventUrl = `/api/WhatsappMsgReport?Code=${
       tempCode || enevtCode || 0
-    }&Type=${typeCode}&Site=${siteCode}&SDate=${sdate}&EDate=${edate}`;
+    }&Type=${typeCode}&Site=${siteCode}&SDate=${sdate}&EDate=${edate}&User=${userId}`;
     // console.log("url", eventUrl)
     try {
       setLoading(true);
       let { res, got } = await api(eventUrl, "GET", "");
       if (res.status == 200) {
         let list = got.data;
-
+        if(list.length == 0){
+          showToastMessage('No Record Found')
+        }
         console.log("tableData", list);
         setTableDataList(list);
 
@@ -201,16 +207,15 @@ const ResolvedSms = () => {
   ) => {
     // console.log(`Selected value for ${selectName}:`, selectedOption);
 
-    {
-      selectName == "select1"
-        ? setTypeCode(selectedOption.value)
-        : selectName == "select2"
-        ? setEventCode(selectedOption.value)
-        : selectName == "select3"
-        ? setTempCode(selectedOption.value)
-        : selectName == "select4"
-        ? setSiteCode(selectedOption.value)
-        : null;
+    // }
+    if (selectName === "select1") {
+      setTypeCode(selectedOption.value);
+    } else if (selectName === "select2") {
+      setEventCode(selectedOption.value);
+    } else if (selectName === "select3") {
+      setTempCode(selectedOption.value);
+    } else if (selectName === "select4") {
+      setSiteCode(selectedOption.value);
     }
 
     setSelectedValues((prevSelectedValues) => ({
@@ -331,7 +336,7 @@ const ResolvedSms = () => {
           </div>
         </div>
         {/* Page Header Second */}
-        <ReviewComp />
+        {/* <ReviewComp /> */}
         {/* /-------------Page Header with inputField-----*/}
 
         <div className="row pt-4">

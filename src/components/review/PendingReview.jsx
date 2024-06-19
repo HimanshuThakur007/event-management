@@ -1,18 +1,13 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
-import { Table, Input, Button } from "antd";
+import { Table, Input } from "antd";
 import "../antdstyle.css";
 import { itemRender, onShowSizeChange } from "../paginationfunction";
-import { MdOutlinePublish } from "react-icons/md";
 import { SiMicrosoftexcel } from "react-icons/si";
-import { avatar11, avatar10 } from "../imagepath";
 import SubmitButton from "../CustomComp/SubmitButton";
 import InputSelect from "../CustomComp/InputSelect";
-import DateTimeInput, {
-  convert,
-  convertDate,
-} from "../CustomComp/DateTimeInput";
+import DateTimeInput, { convertDate } from "../CustomComp/DateTimeInput";
 import useFetch from "../Hooks/useFetch";
 import ReviewComp from "./ReviewComp";
 import ReactToast, {
@@ -20,27 +15,8 @@ import ReactToast, {
   showToastMessage,
 } from "../CustomComp/ReactToast";
 import ReactLoader from "../CustomComp/ReactLoader";
-import InputField from "../CustomComp/InputField";
 import { Excel } from "antd-table-saveas-excel";
 import InputSearch from "../CustomComp/InputSearch";
-// import { Input, Table, Button } from "antd";
-
-// const dataSource = [
-//     {
-//       id: "1",
-//       name: "Mo Salah",
-//       review:'rrrrr',
-//       rating:'',
-//       message:"Hello"
-//     },
-//     {
-//         id: "2",
-//         name: "Salah",
-//         review:'rrrrr',
-//         rating:'',
-//         message:"Hello ff"
-//     }
-//   ];
 
 const PendingReview = () => {
   let api = useFetch();
@@ -76,18 +52,14 @@ const PendingReview = () => {
   const [eventList, setEventList] = React.useState([]);
   const [tableDataList, setTableDataList] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const [message, setMessage] = React.useState("");
-  const [ratingData, setRatingData] = React.useState(3.5);
-  const [tableData, setTableData] = React.useState([]);
   const [selectedRows, setSelectedRows] = React.useState([]);
   const [siteList, setSiteList] = React.useState([]);
   const [page, setPage] = React.useState(1);
   const [searchText, setSearchText] = React.useState("");
-
-  const ratingHandelChange = (e) => {
-    let rating = e.target.value;
-    setRatingData(rating);
-  };
+  const userData = sessionStorage.getItem("userData");
+  if (userData !== null) {
+    var userId = JSON.parse(userData).UserId;
+  }
 
   function getRandomColor() {
     const letters = "0123456789ABCDEF";
@@ -150,6 +122,7 @@ const PendingReview = () => {
         // console.log("rrrr$", res);
         if (got.sentStatus == true) {
           showToastMessage("Message Sent SucessFully");
+          getTableDataList();
         } else {
           showToastError("Something Went Wrong");
         }
@@ -228,6 +201,7 @@ const PendingReview = () => {
     {
       title: "Remark",
       dataIndex: "remark",
+      width: "30%",
       render: (text, record) => <span>{text}</span>,
       sorter: (a, b) => a.remark.length - b.remark.length,
     },
@@ -235,21 +209,27 @@ const PendingReview = () => {
     {
       title: "Message",
       dataIndex: "msg",
-      width: '40%',
+      width: "40%",
       render: (text, record, index) => {
         let ind = (page - 1) * 10 + index;
         // console.log('msdggg', record.msg)
-        return <Input.TextArea size="small" value={text} onChange={onInputChange("msg", ind)} />;
+        return (
+          <Input.TextArea
+            size="small"
+            value={text}
+            onChange={onInputChange("msg", ind)}
+          />
+        );
       },
     },
   ];
- 
+
   // ===================Event-List========================
   const getEventList = async () => {
     let currData = [];
     let addobj = { label: "All", value: 0 };
     currData[0] = addobj;
-    let eventUrl = `/api/LoadEventDetails?Code=0`;
+    let eventUrl = `/api/LoadEventDetails?Code=0&WI=0&Ucode=${userId}`;;
     try {
       setLoading(true);
       let { res, got } = await api(eventUrl, "GET", "");
@@ -305,7 +285,9 @@ const PendingReview = () => {
     setTableDataList([]);
     let eventUrl = `/api/CustomerReviewReport?Code=${
       tempCode || enevtCode || 0
-    }&Type=${typeCode}&Site=${siteCode}&SDate=${sdate}&EDate=${edate}&Rating=3.5`;
+    }&Type=${
+      typeCode || 2
+    }&Site=${siteCode}&SDate=${sdate}&EDate=${edate}&Rating=3.5&User=${userId}`;
     console.log("url", eventUrl);
     try {
       setLoading(true);
@@ -335,7 +317,7 @@ const PendingReview = () => {
     let corrData = [];
     let addobj = { label: "All", value: 0 };
     corrData[0] = addobj;
-    let Url = `/api/LoadMasterDetails1?code=0&MasterType=100`;
+    let Url = `/api/LoadReportingSites?User=${userId}`;
     try {
       setLoading(true);
       let { res, got } = await api(Url, "GET", "");
@@ -378,17 +360,15 @@ const PendingReview = () => {
   ) => {
     // console.log(`Selected value for ${selectName}:`, selectedOption);
 
-    {
-      selectName == "select1"
-        ? setTypeCode(selectedOption.value)
-        : selectName == "select2"
-        ? setEventCode(selectedOption.value)
-        : selectName == "select3"
-        ? setTempCode(selectedOption.value)
-        : selectName == "select4"
-        ? setSiteCode(selectedOption.value)
-        : null;
-    }
+    if (selectName === "select1") {
+      setTypeCode(selectedOption.value);
+    } else if (selectName === "select2") {
+      setEventCode(selectedOption.value);
+    } else if (selectName === "select3") {
+      setTempCode(selectedOption.value);
+    } else if (selectName === "select4") {
+      setSiteCode(selectedOption.value);
+    } 
 
     setSelectedValues((prevSelectedValues) => ({
       ...prevSelectedValues,
@@ -409,10 +389,6 @@ const PendingReview = () => {
         }
       )
       .saveAs("PendingReview.xlsx");
-  };
-
-  const handleInputField = (e) => {
-    setMessage(e.target.value);
   };
 
   let iconStyles = { color: "#10793F", cursor: "pointer" };
@@ -447,7 +423,7 @@ const PendingReview = () => {
           </div>
         </div>
         {/* Page Header Second */}
-        <ReviewComp />
+        {/* <ReviewComp /> */}
         {/* /-------------Page Header with inputField-----*/}
         <div className="row pt-4">
           <div className="col-md-12">
@@ -460,7 +436,12 @@ const PendingReview = () => {
                       selectName="Type"
                       selectClass="col-lg-12"
                       placeholder="Event Type"
-                      value={selectedValues.select1}
+                      value={
+                        selectedValues.select1 || {
+                          label: "Template",
+                          Value: 2,
+                        }
+                      }
                       onChange={(selectedOption) =>
                         handleSelectChange(
                           selectedOption,
@@ -494,23 +475,59 @@ const PendingReview = () => {
                   </div>
 
                   <div className="col-xl-2">
-                    {typeCode == 1 ? (
+                    <InputSelect
+                      labelClass=""
+                      selectName={typeCode == 1 ? "Event" : "Template"}
+                      selectClass="col-lg-12"
+                      placeholder="event"
+                      value={
+                        typeCode == 1
+                          ? selectedValues.select2 || { label: "All", value: 0 }
+                          : selectedValues.select3 || { label: "All", value: 0 }
+                      }
+                      onChange={
+                        typeCode == 1
+                          ? (selectedOption) =>
+                              handleSelectChange(
+                                selectedOption,
+                                "select2",
+                                setSelectedValues
+                              )
+                          : (selectedOption) =>
+                              handleSelectChange(
+                                selectedOption,
+                                "select3",
+                                setSelectedValues
+                              )
+                      }
+                      options={typeCode == 1 ? eventList : templateList}
+                      styles={customStyles}
+                    />
+                    {/* {typeCode == 1 ? (
                       <InputSelect
                         labelClass=""
                         selectName="Event"
                         selectClass="col-lg-12"
                         placeholder="event"
-                        value={
-                          selectedValues.select2 || { label: "All", value: 0 }
+                        value={typeCode == 1?
+                          selectedValues.select2 || { label: "All", value: 0 }:
+                          selectedValues.select3 || { label: "All", value: 0 }
                         }
-                        onChange={(selectedOption) =>
+                        onChange={
+                          typeCode == 1?
+                          (selectedOption) =>
                           handleSelectChange(
                             selectedOption,
                             "select2",
                             setSelectedValues
+                          ):(selectedOption) =>
+                          handleSelectChange(
+                            selectedOption,
+                            "select3",
+                            setSelectedValues
                           )
                         }
-                        options={eventList}
+                        options={typeCode == 1?eventList:templateList}
                         styles={customStyles}
                       />
                     ) : (
@@ -532,26 +549,9 @@ const PendingReview = () => {
                         options={templateList}
                         styles={customStyles}
                       />
-                    )}
+                    )} */}
                   </div>
-                  {/* <div className="col-xl-2">
-                    <div className="form-group row">
-                      <label className="col-form-label">Rating Upto</label>
-                      <div className="col-lg-12">
-                        <input
-                          type="number"
-                          min="0"
-                          name="rating"
-                          className="form-control"
-                          autoComplete="off"
-                          onChange={ratingHandelChange}
-                          value={ratingData}
-                          placeholder="Rating Upto"
-                          
-                        />
-                      </div>
-                    </div>
-                  </div> */}
+
                   <div className="col-xl-2">
                     <DateTimeInput
                       datelblClass=""
@@ -647,7 +647,7 @@ const PendingReview = () => {
                     }}
                     columns={columns}
                     dataSource={tableDataList}
-                    rowKey={(record) => record.id}
+                    rowKey={(index) => index}
                   />
                 </div>
                 <div className="col-xl-12 mb-2">

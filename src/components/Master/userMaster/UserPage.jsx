@@ -1,32 +1,32 @@
-import React from 'react';
+import React from "react";
 import * as FiIcons from "react-icons/fi";
-import PageHeader from '../../CustomComp/PageHeader';
-import PageHelmet from '../../CustomComp/PageHelmet';
-import InputField from '../../CustomComp/InputField';
-import InputSelect from '../../CustomComp/InputSelect';
-import SubmitButton from '../../CustomComp/SubmitButton';
-import CardComp from '../../CustomComp/CardComp';
-import ReactLoader from '../../CustomComp/ReactLoader';
-import DateTimeInput from '../../CustomComp/DateTimeInput';
+import PageHeader from "../../CustomComp/PageHeader";
+import PageHelmet from "../../CustomComp/PageHelmet";
+import InputField from "../../CustomComp/InputField";
+import InputSelect from "../../CustomComp/InputSelect";
+import SubmitButton from "../../CustomComp/SubmitButton";
+import CardComp from "../../CustomComp/CardComp";
+import ReactLoader from "../../CustomComp/ReactLoader";
+import DateTimeInput from "../../CustomComp/DateTimeInput";
 import CheckboxTree from "react-checkbox-tree";
 import "react-checkbox-tree/lib/react-checkbox-tree.css";
-import { NestedCheckbox } from '../../NestedCheckbox/NestedCheckbox';
-import { TreeView } from '../../NestedCheckbox/TreeNode';
-
+import { NestedCheckbox } from "../../NestedCheckbox/NestedCheckbox";
+import { TreeView } from "../../NestedCheckbox/TreeNode";
+// import CheckboxTree from './CheckboxTree';
 
 const UserPage = (props) => {
-    let iconStyles = { color: "grey" };
-    const {
-      username,
-      password,
-      email,
-      confirmpassword,
-      mobile,
-      type,
-      address,
-      whtsap,
-    } = props.inputValue;
-    console.log('pppppp',props.nodes)
+  let iconStyles = { color: "grey" };
+  const {
+    username,
+    password,
+    email,
+    confirmpassword,
+    mobile,
+    type,
+    address,
+    whtsap,
+  } = props.inputValue;
+  // console.log("pppppp", props.nodes);
   return (
     <>
       <div className="page-wrapper">
@@ -216,14 +216,14 @@ const UserPage = (props) => {
                     />
                   )}
                   <InputSelect
-                        labelClass="col-lg-3"
-                        selectName="Site"
-                        selectClass="col-lg-9"
-                        value={props.siteSelect}
-                        onChange={props.selectSiteHandler}
-                        name="EType"
-                        options={props.siteList}
-                      />
+                    labelClass="col-lg-3"
+                    selectName="Site"
+                    selectClass="col-lg-9"
+                    value={props.siteSelect}
+                    onChange={props.selectSiteHandler}
+                    name="EType"
+                    options={props.siteList}
+                  />
 
                   <InputField
                     type="file"
@@ -250,21 +250,36 @@ const UserPage = (props) => {
               > */}
               </div>
               <CardComp cardTitle="User Right" cardBodyTitle="">
-                <CheckboxTree
-                  nodes={props.nodes}
-                  checked={props.checked}
-                  expanded={props.expanded}
-                  onCheck={(checkedData) => {
-                    props.setChecked(checkedData);
-                  }}
-                  onExpand={(expandedData) => {
-                    props.setExpanded(expandedData);
-                  }}
-                />
-                {/* <TreeView data={props.nodes}/> */}
-                {/* <NestedCheckbox data={props.nodes}/> */}
-                </CardComp>
-              
+                <div className="row">
+                  <div className="col-xl-6">
+                    {/* <CheckboxTree
+                      nodes={props.nodes}
+                      checked={props.checked}
+                      expanded={props.expanded}
+                      onCheck={(checkedData) => {
+                        props.setChecked(checkedData);
+                      }}
+                      onExpand={(expandedData) => {
+                        props.setExpanded(expandedData);
+                      }}
+                    /> */}
+                    {props.renderCheckboxTree(props.userRightList)}
+                  </div>
+                  <div className="col-xl-6">
+                    <InputSelect
+                      labelClass="col-lg-3"
+                      selectName="Reporting Site"
+                      selectClass="col-lg-9"
+                      value={props.multiSiteList}
+                      onChange={props.multiSiteHandler}
+                      name="EType"
+                      isMulti
+                      options={props.siteList}
+                    />
+                  </div>
+                </div>
+              </CardComp>
+
               <SubmitButton parentClass="text-end" btnName="Submit" />
             </form>
           </CardComp>
@@ -272,6 +287,6 @@ const UserPage = (props) => {
       </div>
     </>
   );
-}
+};
 
 export default UserPage;

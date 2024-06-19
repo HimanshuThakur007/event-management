@@ -26,6 +26,9 @@ const ReviewComp = () => {
             <Link className="dropdown-item" to="/resolvedsms_report">
               Resolved Sms
             </Link>
+            <Link className="dropdown-item" to="/comparison_report">
+              Comparison Report
+            </Link>
           </div>
         </div>
       </div>

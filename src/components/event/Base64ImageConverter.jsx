@@ -1,5 +1,5 @@
 import React from 'react'
-export const Base64ImageConverter = ({ base64String }) => {
+export const Base64ImageConverter = ({ base64String,style }) => {
   const imageUrl = `${base64String}`;
-  return <img src={imageUrl} alt="Base64 Image" />;
+  return <img src={imageUrl} style={style} alt="Base64 Image" />;
 };

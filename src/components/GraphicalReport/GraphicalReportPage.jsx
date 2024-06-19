@@ -9,6 +9,7 @@ import DateTimeInput from "../CustomComp/DateTimeInput";
 import ReactLoader from "../CustomComp/ReactLoader";
 import { Margin, usePDF } from "react-to-pdf";
 import {BsFiletypePdf,BsFileEarmarkPdfFill} from 'react-icons/bs'
+import GraphNav from "./GraphNav";
 // import {BsFileEarmarkPdfFill} from 'react-icons/bs'
 
 
@@ -42,7 +43,7 @@ const GraphicalReportPage = (props) => {
               <span className="page-title-icon bg-gradient-primary text-white me-2">
                 <i className="fas fa-table"></i>
               </span>{" "}
-              <span>Graphical Report</span>
+              <span>Template Graphical Report</span>
             </h3>
           </div>
           <div className="col text-end">
@@ -54,7 +55,8 @@ const GraphicalReportPage = (props) => {
             </ul>
           </div>
         </div>
-        <div className="row pt-4">
+        {/* <GraphNav/> */}
+        <div className="row">
           <div className="col-md-12">
             <div className="card">
               <div className="card-body">
@@ -150,7 +152,7 @@ const GraphicalReportPage = (props) => {
           <div className="col-md-12">
             <div className="card h-100">
               <div className="card-body">
-                {props.feedBackGraph && 
+                {props.feedBackGraph && props.feedBackGraph != null && 
                   props.feedBackGraph.map((item, ind) => {
                     if(item.total_Feedback > 0){
                     return (
@@ -217,7 +219,7 @@ const GraphicalReportPage = (props) => {
                               />
                               <hr />
                               <div className="col-12 d-flex flex-wrap">
-                                {obj.quesWiseHappyGraficReport.map(
+                                {obj.quesWiseHappyGraficReport !== null && obj.quesWiseHappyGraficReport.map(
                                   (items, index) => {
                                     return (
                                       <div className="col-lg-6 col-12 mb-4" key={index}>

@@ -119,12 +119,20 @@ const Events = () => {
     // -----multiple-Select-----------------------
   const handleSelectChange = (selectedOption, selectName, setSelectedValues) => {
  
- {
-  selectName == "select1" ? setEvtTypeCode(selectedOption.value): selectName == 'select2'?
-  setEvtStatusCode(selectedOption.value): selectName == 'select3'?setSiteToCode(selectedOption.value):
-  selectName == 'select4'?setCustomerCode(selectedOption.value):null
- }
-
+//  {
+//   selectName == "select1" ? setEvtTypeCode(selectedOption.value): selectName == 'select2'?
+//   setEvtStatusCode(selectedOption.value): selectName == 'select3'?setSiteToCode(selectedOption.value):
+//   selectName == 'select4'?setCustomerCode(selectedOption.value):null
+//  }
+if (selectName === "select1") {
+  setEvtTypeCode(selectedOption.value);
+} else if (selectName === "select2") {
+  setEvtStatusCode(selectedOption.value);
+} else if (selectName === "select3") {
+  setSiteToCode(selectedOption.value);
+} else if (selectName === "select4") {
+  setCustomerCode(selectedOption.value);
+}
     setSelectedValues((prevSelectedValues) => ({
       ...prevSelectedValues,
       [selectName]: selectedOption,
@@ -336,8 +344,7 @@ const Events = () => {
                 PhNo :'',
                 ETime:''
             });
-           
-           
+            history.push("/") 
             setLoading(false)
           } else {
             setLoading(false)
@@ -375,7 +382,7 @@ const Events = () => {
         let QueArr=[]
         let modifyUrl = `/api/LoadEventDetails?Code=${code}`;
         try {
-          // setLoading(true)
+          setLoading(true)
           let { res, got } = await api(modifyUrl, "GET", "");
           if (res.status == 200) {
             console.log("Modifydata", got.data);

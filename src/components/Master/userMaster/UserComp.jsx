@@ -14,8 +14,8 @@ const block_list = [
   { label: "No", value: 0 },
   { label: "Yes", value: 1 },
 ];
-
 const UserComp = () => {
+  var code =0
   const { state } = useLocation();
   const history = useHistory();
   const api = useFetch();
@@ -47,12 +47,20 @@ const UserComp = () => {
     
     // Add more date fields as needed
   });
-  const [checked, setChecked] = useState([]);
-  const [expanded, setExpanded] = useState([]);
   const [userRightList, setUserRightList] = useState([]);
   const [siteList, setSiteList] = useState([]);
+  const [multiSiteList, setMultisiteList] = useState([]);
   const [siteSelect, setSiteSelect] = useState(null);
   const [selectSiteCode, setSelectSiteCode] = useState(null);
+  const [checkedItems, setCheckedItems] = useState([]);
+
+  if (state) {
+    if (state && state.code) {
+      code = state.code;
+    }
+  }
+
+  console.log('code', code)
   // --------------------------date handler-----------------------------------------
   const handleDateChange = (dateFieldName, dateValue) => {
     setDates({
@@ -61,6 +69,11 @@ const UserComp = () => {
     });
     
 };
+
+const multiSiteHandler = (selectOptions)=>{
+  setMultisiteList(selectOptions)
+  console.log('options', selectOptions)
+}
 
   // const toastmsg = showToastMessage()
 
@@ -72,7 +85,7 @@ const UserComp = () => {
   };
   const selectSiteHandler = (siteSelect)=>{
         setSiteSelect(siteSelect)
-        setSelectSiteCode(siteSelect.value)
+        setSelectSiteCode(siteSelect.value || 0)
         console.log(siteSelect.value,'value')
   }
 
@@ -131,13 +144,14 @@ const UserComp = () => {
       setLoading(true)
       let { res, got } = await api(modifyUrl, "GET", "");
       if (res.status == 200) {
-        // console.log("data", got.data);
+        console.log("data", got.data);
         let listData = got.data[0];
         let userCreateMaster = listData.userMasterDetails;
         let d = convertToIST(userCreateMaster[0].dob);
         // console.log('datessss:-',d)
         let userDep = listData.userDepartment;
-        // console.log('uuuuuuuuuuuuu',listData)
+        let Rsite = listData.reportingSites 
+        console.log('Rsite',Rsite)
         if(listData.userImgs.length!==0){
         let imageObj = listData.userImgs[0]
         var finalImg = imageObj.img
@@ -155,7 +169,7 @@ const UserComp = () => {
           address:userCreateMaster[0].address,
           whtsap: userCreateMaster[0].wNo
         });
-        console.log('userCreateMaster',userCreateMaster)
+        // console.log('userCreateMaster',userCreateMaster)
         // if(userCreateMaster[0].imagePath != null && userCreateMaster[0].imagePath != undefined){
         // setImage(userCreateMaster[0].imagePath)}
         setImage(finalImg)
@@ -171,10 +185,18 @@ const UserComp = () => {
             label: item.departmentName,
           });
         });
+        let siteData = []
+        Rsite.map((item)=>{
+          siteData.push({
+            Code: item.code,
+           value: item.site,
+           label:item.siteName
+          })
+        })
         // console.log('ccccccccccc', corrData)
 
         setMultiSelectValue([...corrData]);
-
+        setMultisiteList([...siteData])
         setSelectedOption({
           label: userCreateMaster[0].utName,
         });
@@ -226,17 +248,103 @@ const UserComp = () => {
   };
 
   React.useEffect(() => {
-    var uniqueChars;
-    let child = checked.concat(expanded);
-    uniqueChars = [...new Set(child)];
-    console.log(uniqueChars, "checked+++++");
-    console.log("expand", expanded);
-  }, [checked, expanded]);
+    
+    console.log(checkedItems, "checked+++++,expanded");
+
+  }, [checkedItems]);
 
   // =========================userRight Modify================================
+
+  //---------------##########----------this  code for user right add modify section------------------------------
+
+const renderCheckboxTree = (data) => (
+  <ul className="checkbox-nested">
+    {data.map((item) => (
+      <li key={item.value}>
+        <input
+          type="checkbox"
+          name={item.label}
+          value={item.value}
+          checked={item.checked}
+          onChange={(e) => handleCheckboxChange(e, item)}
+          className="checkbox-input"
+        />
+        <label className="checkbox-label">{item.label}</label>
+        {item.children.length > 0 && item.checked && renderNestedCheckboxes(item.children)}
+      </li>
+    ))}
+  </ul>
+);
+
+const renderNestedCheckboxes = (children) => {
+  return (
+    <ul className="checkbox-nested">
+      {children.map((childItem) => (
+        <li key={childItem.value}>
+          <input
+            type="checkbox"
+            name={childItem.label}
+            value={childItem.value}
+            checked={childItem.checked}
+            onChange={(e) => handleCheckboxChange(e, childItem)}
+            className="checkbox-input"
+          />
+          <label className="checkbox-label">{childItem.label}</label>
+          {childItem.children && childItem.children.length > 0 && childItem.checked && renderNestedCheckboxes(childItem.children)}
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+
+//----checkbox handler----------------------
+const handleCheckboxChange = (e, item) => {
+  if (state) {
+    if (state && state.code) {
+      var code = state.code;
+    }
+  }
+  const { checked } = e.target;
+
+  const updateCheckedStateRecursive = (menuItem) => {
+    menuItem.checked = checked;
+    if (menuItem.children && menuItem.children.length > 0) {
+      menuItem.children.forEach(updateCheckedStateRecursive);
+    }
+  };
+
+
+  updateCheckedStateRecursive(item);
+
+
+  setUserRightList([...userRightList]); 
+  const updateCheckedItemsRecursive = (menuItem) => {
+    // console.log('MenuItem',menuItem)
+    if (menuItem.checked) {
+   
+      setCheckedItems((prevCheckedItems) => [
+        ...prevCheckedItems,
+        {Code: code || 0, RCode: parseInt(menuItem.value)}
+      ]);
+    } else {
+      // If the checkbox is unchecked, remove the item from the checkedItems array by RCode
+      setCheckedItems((prevCheckedItems) =>
+        prevCheckedItems.filter(({ RCode }) => RCode !== parseInt(menuItem.value))
+      );
+    }
+    if (menuItem.children && menuItem.children.length > 0) {
+      menuItem.children.forEach(updateCheckedItemsRecursive);
+    }
+  };
+
+  // Update checked items recursively
+  updateCheckedItemsRecursive(item);
+};
+
+
+
   const getUserRightModifyHandler = async () => {
-    var currData = [];
-    var uniqueChars;
     if (state) {
       if (state && state.code) {
         var code = state.code;
@@ -244,37 +352,37 @@ const UserComp = () => {
       }
     }
     let Url = `/api/LoadUserRightsMenuTree?UCode=${code}`;
+    console.log('url', Url)
+    
     try {
       setLoading(true);
       let { res, got } = await api(Url, "GET", "");
       if (res.status == 200) {
         let data = got;
-        // console.log("MenuTreeOriginal Data", data);
-        data.map((grand) => {
-          // console.log('item',grand)
-          if (grand.checked && grand.children.length == 0) {
-            currData.push(grand.value);
-          }
-          grand.children.map((parents) => {
-            if (parents.checked) {
-              currData.push(parents.value);
-            
-            }
-            if (parents.children != null && parents.children.length > 0) {
-              parents.children.map((child) => {
-                // console.log("$$$$$$$$$$$$$=>",cc)
-                if (child.checked) {
-                  // console.log("ccc44433", child);
-                  currData.push(child.value);
-                }
-              });
-            }
-          });
+     
+       console.log('modifyData',data)
+    const updateCheckedStateAndItemsRecursive = (menuItem) => {
+      // console.log(menuItem,'menuItemmmm')
+      menuItem.checked = menuItem.checked === true; 
+      
+      if (menuItem.checked) {
+       
+        setCheckedItems((prevCheckedItems) => [
+          ...prevCheckedItems,
+          {Code:code ||0, RCode: parseInt(menuItem.value) }
+        ]);
+      }
 
-          uniqueChars = [...new Set(currData)];
-          // console.log("modCurrData$$$", uniqueChars);
-          setChecked(uniqueChars);
-        });
+      menuItem.children.forEach(updateCheckedStateAndItemsRecursive);
+    };
+
+   
+    data.forEach(menuItem => {
+      updateCheckedStateAndItemsRecursive(menuItem);
+    });
+
+   
+    setUserRightList(data);
 
         setLoading(false);
       } else {
@@ -302,35 +410,30 @@ const UserComp = () => {
     setImagePath(h[0])
   }
 
-  const uniqByKeepLast = (data, key) => {
-    return [...new Map(data.map((x) => [key(x), x])).values()];
-  };
 // ====================saveData=========================
   const saveHandler = async (e) => {
     e.preventDefault();
     if (state) {
       if (state && state.code) {
         var code = state.code;
-        var path = state.path
       }
     }
     let mainArr = [];
+    let siteArr =[]
     if (multiSelectValue.length > 0){
     multiSelectValue.map((item) => {
-      mainArr.push({ department: item.value , code: code || 0 });
+      mainArr.push({ department: item.value||0 , code: code || 0 });
     })}else{
-      mainArr.push({department: parseInt(departmentCode), code:code||0})
+      mainArr.push({department:0, code:code||0})
     }
-    let userRight = [];
-    var uniqueChars;
-    let child = checked.concat(expanded);
-    // console.log('Cc56',checked)
-    child.forEach((item) => {
-      // console.log(item,"======++++++")
-      userRight.push({ Code: code || 0, RCode: parseInt(item)||0 });
-    });
-    uniqueChars = uniqByKeepLast(userRight, (it) => it.RCode);
-    // console.log("main Arr", mainArr);
+    if (multiSiteList.length > 0){
+   multiSiteList.map((item)=>{
+  siteArr.push({Site : item.value ,Code : code || 0})
+   })
+  }else{
+    siteArr.push({Site: 0 , Code: code || 0})
+  }
+    // console.log("uniqueChars arr", uniqueChars);
     const urlCreateUser = "/api/SaveUserMaster";
     // console.log('codeUsers', selectedFiles)
     var body = {
@@ -349,7 +452,7 @@ const UserComp = () => {
           Address : address,
           DOB  :dates.dob,
           WNo :whtsap,
-          Site: parseInt(selectSiteCode),
+          Site: parseInt(selectSiteCode)||0,
           ProjType : 2
         },
       ],
@@ -360,9 +463,11 @@ const UserComp = () => {
           Img : image
         }
       ],
-      UserRights :[...userRight]
+      UserRights :checkedItems || [],
+      ReportingSites : [...siteArr]
     };
-    console.log("body", body);
+    // console.log("body", body);
+    console.log("body", JSON.stringify(body));
     try {
       setLoading(true)
       let { res, got } = await api(urlCreateUser, "POST", body);
@@ -395,6 +500,7 @@ const UserComp = () => {
       showToastError(error);
     }
   };
+  // =====================================end save handler===========================================================================
 
   //   ----------------------------------Departement----------------------------------------
 
@@ -462,30 +568,10 @@ const UserComp = () => {
       let { res, got } = await api(Url, "GET", "");
       if (res.status == 200) {
         let data = got;
-        data.forEach((item) => {
-          if (item.children.length > 0) {
-            currData.push({
-              value: item.value,
-              label: item.label,
-              type: item.type,
-              address: item.address,
-              checked: item.checked,
-              children: item.children,
-            });
-          } else {
-            currData.push({
-              value: item.value,
-              label: item.label,
-              type: item.type,
-              address: item.address,
-              checked: item.checked,
-              children: null,
-            });
-          }
-        });
-        // console.log('***********',currData)
+        
+        // console.log('***********',data)
 
-        setUserRightList(currData);
+        setUserRightList(data);
         setLoading(false);
       } else {
         setLoading(false);
@@ -500,8 +586,11 @@ const UserComp = () => {
     getDepartementList();
     getUserTypeList();
     getSiteList()
-    getUserRights();
-    
+    if(code === 0){
+      getUserRights();
+
+    }
+      
   }, []);
 
 
@@ -532,6 +621,8 @@ const UserComp = () => {
       <ReactToast/>
       <UserPage
          typelist={typelist}
+         multiSiteHandler={multiSiteHandler}
+         multiSiteList={multiSiteList}
          selectHandler={selectHandler}
          selectedOption={selectedOption}
          blockOption={blockOption}
@@ -556,14 +647,16 @@ const UserComp = () => {
          dates={dates}
          image={image}
          onImageChange={onImageChange}
-         setExpanded={setExpanded}
-         expanded={expanded}
-         setChecked={setChecked}
-         checked={checked}
+        //  setExpanded={setExpanded}
+        //  expanded={expanded}
+        //  setChecked={setChecked}
+        //  checked={checked}
          siteList={siteList}
          siteSelect={siteSelect}
          selectSiteHandler={selectSiteHandler}
          nodes={userRightList}
+         renderCheckboxTree={renderCheckboxTree}
+         userRightList={userRightList}
       />
     </>
   );

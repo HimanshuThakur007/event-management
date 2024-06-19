@@ -18,6 +18,12 @@ const ListComp = () => {
   const [rowData, setRowData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [masterType, setMasterType] = useState(0)
+
+  const userData = sessionStorage.getItem("userData");
+  if (userData !== null) {
+    var userId = JSON.parse(userData).UserId
+  }
 
   function getRandomColor() {
     const letters = "0123456789ABCDEF";
@@ -39,6 +45,7 @@ const ListComp = () => {
 
         setListData(list);
         setRowData(columnss);
+        setMasterType(131003)
         setLoading(false);
       } else {
         setLoading(false);
@@ -62,6 +69,7 @@ const ListComp = () => {
 
         setListData(list);
         setRowData(department);
+        setMasterType(121016)
         setLoading(false);
       } else {
         setLoading(false);
@@ -86,6 +94,7 @@ const ListComp = () => {
 
         setListData(list);
         setRowData(columnCustomerList);
+        setMasterType(141003)
         setLoading(false);
       } else {
         setLoading(false);
@@ -110,6 +119,7 @@ const ListComp = () => {
 
         setListData(list);
         setRowData(Purpose);
+        setMasterType(121004)
         setLoading(false);
       } else {
         setLoading(false);
@@ -134,6 +144,7 @@ const ListComp = () => {
 
         setListData(list);
         setRowData(Site);
+        setMasterType(121019)
         setLoading(false);
       } else {
         setLoading(false);
@@ -163,6 +174,7 @@ const ListComp = () => {
         });
         setListData(corrData);
         setRowData(review);
+        setMasterType(121022)
         setLoading(false);
       } else {
         setLoading(false);
@@ -209,6 +221,7 @@ const ListComp = () => {
 
         setListData(list);
         setRowData(EvtType);
+        setMasterType(121010)
         setLoading(false);
       } else {
         setLoading(false);
@@ -233,6 +246,7 @@ const ListComp = () => {
 
         setListData(list);
         setRowData(EvtStatus);
+        setMasterType(121013)
         setLoading(false);
       } else {
         setLoading(false);
@@ -257,6 +271,7 @@ const ListComp = () => {
 
         setListData(list);
         setRowData(usertype);
+        setMasterType(121007)
         setLoading(false);
       } else {
         setLoading(false);
@@ -281,6 +296,125 @@ const ListComp = () => {
       )
       .saveAs('Event.xlsx');
   };
+
+  const onDeleteRow = async(record)=>{
+    // setMasterType()
+    console.log('deleteCode',record.code)
+      // e.preventDefault();
+      let dataCode=record.code
+      const urlfollow = `/api/DeleteMasterTransaction?UCode=${userId}&MT=${masterType}&Code=${dataCode}`;
+      console.log('deleteUrl', urlfollow)
+      var body = {};
+      // console.log("bodyjson", JSON.stringify(body));
+      try {
+        setLoading(true);
+        let { res, got } = await api(urlfollow, "POST", body);
+        if (res.status == 200) {
+          // console.log("maindata", body);
+          alert(got.msg);
+          RecallFunctionHandler()
+         
+          setLoading(false);
+        } else {
+          setLoading(false);
+          alert(got.msg);
+        }
+      } catch (error) {
+        setLoading(false);
+        alert(error);
+      }
+  
+  }
+
+  const RecallFunctionHandler=()=>{
+    switch (routeParams.id) {
+      case "4":
+        getuserCreationList();
+        break;
+      case "2":
+        getDepartmentList();
+        break;
+      case "3":
+        getSiteList();
+        break;
+      case "5":
+        getList();
+        break;
+      case "6":
+        getPurposeList();
+        break;
+      case "1":
+        getUserTypeList();
+        break;
+      case "8":
+        getEventTypeList();
+        break;
+      case "9":
+        getEventStatusList();
+        break;
+      case "10":
+        getReviewList();
+        break;
+      case "11":
+        getMasterGroupList();
+        break;
+      default:
+    }
+  }
+
+  const onRowClick = (record) => {
+    // console.log('recored', record)
+    switch (routeParams.id) {
+      case "4":
+        history.push({
+          pathname: "/add_user",
+          state: { code: record.code },
+        });
+        break;
+      case "3":
+        history.push({
+          pathname: "/site_creation",
+          state: { code: record.code },
+        });
+        break;
+      case "2":
+        history.push({ pathname: "/department", state: { code: record.code } });
+        break;
+      case "5":
+        history.push({
+          pathname: "/customer_master",
+          state: { code: record.code },
+        });
+        break;
+      case "6":
+        history.push({ pathname: "/purpose", state: { code: record.code } });
+        break;
+      case "1":
+        history.push({ pathname: "/user_type", state: { code: record.code } });
+        break;
+      case "8":
+        history.push({ pathname: "/event_type", state: { code: record.code } });
+        break;
+      case "9":
+        history.push({
+          pathname: "/event_status",
+          state: { code: record.code },
+        });
+        break;
+      case "10":
+        history.push({ pathname: "/review_que", state: { code: record.code } });
+        break;
+      case "11":
+        history.push({ pathname: "/master_grp", state: { code: record.code } });
+        break;
+
+      default:
+    }
+  };
+
+  useEffect(() => {
+    RecallFunctionHandler()
+  }, [routeParams.id, searchText,masterType]);
 
   const Site = [
     {
@@ -349,7 +483,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light">
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -400,7 +534,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light">
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -450,7 +584,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light">
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -500,7 +634,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light">
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -551,7 +685,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light">
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -598,7 +732,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light">
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -649,7 +783,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light">
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -675,15 +809,15 @@ const ListComp = () => {
       },
       render: (text, record) => (
         <>
-          <a>
+          {/* <a>
             <span
               className="person-circle-a person-circle"
               style={{ background: getRandomColor() }}
             >
               {text.charAt(0)}
             </span>
-          </a>
-          <a>{text} </a>
+          </a> */}
+          <a className="text-primary">{text} </a>
         </>
       ),
     },
@@ -737,7 +871,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light">
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -867,7 +1001,8 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light">
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={()=>onDeleteRow(record)}>
+            
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -981,98 +1116,14 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light">
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
       ),
     },
   ];
-  const onRowClick = (record) => {
-    // console.log('recored', record)
-    switch (routeParams.id) {
-      case "4":
-        history.push({
-          pathname: "/add_user",
-          state: { code: record.code },
-        });
-        break;
-      case "3":
-        history.push({
-          pathname: "/site_creation",
-          state: { code: record.code },
-        });
-        break;
-      case "2":
-        history.push({ pathname: "/department", state: { code: record.code } });
-        break;
-      case "5":
-        history.push({
-          pathname: "/customer_master",
-          state: { code: record.code },
-        });
-        break;
-      case "6":
-        history.push({ pathname: "/purpose", state: { code: record.code } });
-        break;
-      case "1":
-        history.push({ pathname: "/user_type", state: { code: record.code } });
-        break;
-      case "8":
-        history.push({ pathname: "/event_type", state: { code: record.code } });
-        break;
-      case "9":
-        history.push({
-          pathname: "/event_status",
-          state: { code: record.code },
-        });
-        break;
-      case "10":
-        history.push({ pathname: "/review_que", state: { code: record.code } });
-        break;
-      case "11":
-        history.push({ pathname: "/master_grp", state: { code: record.code } });
-        break;
-
-      default:
-    }
-  };
-
-  useEffect(() => {
-    switch (routeParams.id) {
-      case "4":
-        getuserCreationList();
-        break;
-      case "2":
-        getDepartmentList();
-        break;
-      case "3":
-        getSiteList();
-        break;
-      case "5":
-        getList();
-        break;
-      case "6":
-        getPurposeList();
-        break;
-      case "1":
-        getUserTypeList();
-        break;
-      case "8":
-        getEventTypeList();
-        break;
-      case "9":
-        getEventStatusList();
-        break;
-      case "10":
-        getReviewList();
-        break;
-      case "11":
-        getMasterGroupList();
-        break;
-      default:
-    }
-  }, [routeParams.id, searchText]);
+ 
 
   return (
     <>
