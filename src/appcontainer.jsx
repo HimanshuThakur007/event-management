@@ -182,6 +182,8 @@ import ResolvedSms from "./components/review/ResolvedSms.jsx";
 import EventGraphicReport from "./components/GraphicalReport/EventGraphicReport.jsx";
 import ComparisonReport from "./components/review/ComparisonReport.jsx";
 import ComparisonPage from "./components/GraphicalReport/ComparisonPage.jsx";
+import ForgotPassword from "./components/forgotpassword/index.jsx";
+import EmailConfigPage from "./components/EmailConfig/EmailConfigPage.jsx";
 
 const AppUniversal = (props) => {  
 //   function toggleTheme(e) {     
@@ -395,6 +397,8 @@ const AppUniversal = (props) => {
           <Route path="/register" exact component={Register} />
           <Route path="/comparison_report" exact component={ComparisonReport} />
           <Route path="/comparison_Page" exact component={ComparisonPage} />
+          <Route path="/forgot-password" exact component={ForgotPassword} />
+          <Route path="/email_config" exact component={EmailConfigPage} />
 
         </Switch>
       </div>      

@@ -19,7 +19,7 @@ module.exports = {
     static: {
       directory: path.join(__dirname, "/public/"),
     },
-    port: 3000,
+    port: 3002,
     historyApiFallback: true,
     open: true, // Automatically open the browser
     onAfterSetupMiddleware() {
