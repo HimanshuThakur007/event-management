@@ -27,6 +27,8 @@ const UserPage = (props) => {
     whtsap,
   } = props.inputValue;
   // console.log("pppppp", props.nodes);
+//  let user = mobile.slice(0,10)
+  // console.log("user", user); 
   return (
     <>
       <div className="page-wrapper">

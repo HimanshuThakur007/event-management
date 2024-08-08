@@ -2,9 +2,12 @@
 /* eslint-disable no-unused-vars */
 import React,{useState,useEffect} from 'react'
 import useFetch from '../Hooks/useFetch';
-
+import { useHistory } from 'react-router-dom/cjs/react-router-dom';
+var navData = [];
 export const Emailconfig = () => {
     let api = useFetch();
+    const [sideBarAddress, setSideBarAddress] = React.useState([]);
+    const history = useHistory();
   let InitialData = {
     SenderID: "",
     PWD: "",
@@ -32,7 +35,47 @@ export const Emailconfig = () => {
   };
 
   const { SenderID, PWD, SMTPServer, SMTPPort, EMailB } = inputValue;
+  const getDynamicNavbarList = async (code) => {
+    let Url = `/api/LoadUserMenuTree?UserCode=${code}`;
+    try {
+      setLoading(true);
+      let { res, got } = await api(Url, "GET", "");
+      if (res.status == 200) {
+        console.log("sideNavData", JSON.stringify(got));
+        navData = got;
+        // getAllAddresses(navData)
+        setSideBarAddress(navData);
+        setLoading(false);
+      } else {
+        setLoading(false);
+        alert("Something Went Wrong in List loading");
+      }
+    } catch (err) {
+      setLoading(false);
+      alert(err);
+    }
+  };
 
+  function getAllAddresses(data) {
+    const addresses = [];
+
+    function traverse(node, parentAddress = "") {
+      const currentAddress = parentAddress + node.address;
+      addresses.push(currentAddress);
+
+      if (node.children && node.children.length > 0) {
+        node.children.forEach((child) => {
+          traverse(child, currentAddress);
+        });
+      }
+    }
+
+    data.forEach((item) => {
+      traverse(item);
+    });
+    console.log(addresses, "aaadddtttt");
+    return addresses;
+  }
   const handleEmailSave = async (e) => {
     e.preventDefault();
     const requestBody = {
@@ -52,9 +95,26 @@ export const Emailconfig = () => {
       const { res, got } = await api(saveurl, "POST", requestBody);
       if (got.status === 1) {
         // showToastMessage(got.msg);
-        alert(got.msg);
+        const userData = sessionStorage.getItem("userData");
+        if (userData !== null) {
+          var code = JSON.parse(userData).UserId;
+        }
+        await getDynamicNavbarList(code);
+        const addresses = getAllAddresses(navData); 
+        const homeAddress = addresses.find((address) =>
+          address.includes("/")
+        );
+        if (homeAddress) {
+          history.push(homeAddress);
+        } else if (addresses.length > 0) {
+          // Push to the first address found
+          history.push(addresses[0]);
+        } else {
+          console.log("No address found in navbar data");
+        }
+        // alert(got.msg);
         setInputValue(InitialData);
-        // loadEmailHandler();
+        loadEmailHandler();
         
       } else {
         // showToastError(got.msg);

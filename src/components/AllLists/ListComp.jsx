@@ -8,6 +8,7 @@ import {
 import { Button } from "antd";
 import { FiEdit, FiPlusCircle, FiTrash2, FiXCircle } from "react-icons/fi";
 import { Excel } from 'antd-table-saveas-excel';
+import { showConfirmationAlert } from "../CustomComp/ConfirmAlert";
 
 const ListComp = () => {
   var api = useFetch();
@@ -299,7 +300,7 @@ const ListComp = () => {
 
   const onDeleteRow = async(record)=>{
     // setMasterType()
-    console.log('deleteCode',record.code)
+    // console.log('deleteCode',record.code)
       // e.preventDefault();
       let dataCode=record.code
       const urlfollow = `/api/DeleteMasterTransaction?UCode=${userId}&MT=${masterType}&Code=${dataCode}`;
@@ -311,7 +312,7 @@ const ListComp = () => {
         let { res, got } = await api(urlfollow, "POST", body);
         if (res.status == 200) {
           // console.log("maindata", body);
-          alert(got.msg);
+          // alert(got.msg);
           RecallFunctionHandler()
          
           setLoading(false);
@@ -483,7 +484,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={()=>showConfirmationAlert(onDeleteRow,record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -534,7 +535,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={()=>showConfirmationAlert(onDeleteRow,record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -584,7 +585,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={()=>showConfirmationAlert(onDeleteRow,record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -634,7 +635,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={()=>showConfirmationAlert(onDeleteRow,record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -685,7 +686,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={()=>showConfirmationAlert(onDeleteRow,record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -732,7 +733,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={()=>showConfirmationAlert(onDeleteRow,record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -783,7 +784,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={()=>showConfirmationAlert(onDeleteRow,record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -871,7 +872,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={()=>showConfirmationAlert(onDeleteRow,record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -1001,13 +1002,14 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light" onClick={()=>onDeleteRow(record)}>
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={()=>showConfirmationAlert(onDeleteRow,record)}>
             
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
       ),
     },
+    // <a className="me-1 btn btn-sm bg-danger-light" onClick={()=>onDeleteRow(record)}>
     // {
     //   title: "Actions",
     //   dataIndex: "status",
@@ -1116,7 +1118,7 @@ const ListComp = () => {
           >
             <FiEdit className="feather-edit-3 me-1" /> Edit
           </a>
-          <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}>
+          <a className="me-1 btn btn-sm bg-danger-light" onClick={()=>showConfirmationAlert(onDeleteRow,record)}>
             <FiTrash2 className="feather-trash-2 me-1" /> Delete
           </a>
         </div>
@@ -1124,7 +1126,7 @@ const ListComp = () => {
     },
   ];
  
-
+{/* <a className="me-1 btn btn-sm bg-danger-light" onClick={() => onDeleteRow(record)}></a> */}
   return (
     <>
       <ListPage

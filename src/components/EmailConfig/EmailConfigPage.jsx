@@ -53,7 +53,7 @@ const EmailConfigPage = () => {
                 </div>
                 <div className="col-xl-6">
                   <InputField
-                    type="text"
+                    type="password"
                     name="PWD"
                     star="*"
                     labelName="Password"

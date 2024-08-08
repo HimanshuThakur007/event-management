@@ -10,6 +10,7 @@ import { Excel } from "antd-table-saveas-excel";
 import { SiMicrosoftexcel } from "react-icons/si";
 import InputSearch from "../CustomComp/InputSearch";
 import ReactLoader from "../CustomComp/ReactLoader";
+import { showConfirmationAlert } from "../CustomComp/ConfirmAlert";
 
 const rowSelection = {
   onChange: (selectedRowKeys, selectedRows) => {
@@ -83,7 +84,7 @@ const EventList = () => {
         let { res, got } = await api(urlfollow, "POST", body);
         if (res.status == 200) {
           // console.log("maindata", body);
-          alert(got.msg);
+          // alert(got.msg);
           getEventList()
           setLoading(false);
         } else {
@@ -191,7 +192,7 @@ const EventList = () => {
             <a className="dropdown-item" onClick={() => onRowClick(record)}>
               Edit
             </a>
-            <a className="dropdown-item" onClick={()=>onDeleteRow(record)}>
+            <a className="dropdown-item" onClick={()=>showConfirmationAlert(onDeleteRow,record)}>
               Delete
             </a>
           </div>

@@ -110,6 +110,11 @@ const multiSiteHandler = (selectOptions)=>{
 
   const handleInputField = (e) => {
     const { name, value } = e.target;
+    if (name === "mobile" && value.length > 10) {
+      // Optionally, you can display an error message or do nothing
+      alert("Mobile number must be exactly 10 digits");
+      return; // Do not update state if validation fails
+    }
     setInputValue((prevState) => ({
       ...prevState,
       [name]: value,

@@ -13,9 +13,13 @@ import {
 import ReactToast,{showToastError,showToastMessage} from "../CustomComp/ReactToast";
 import ReactLoader from "../CustomComp/ReactLoader";
 import useFetch from "../Hooks/useFetch";
+
+var navData = [];
 const WhatsAppConfigPage = (props) => {
   let api = useFetch()
   var [whatsAppbody2, setWhatsAppbody2]= React.useState([])
+  const [sideBarAddress, setSideBarAddress] = React.useState([]);
+  const history = useHistory();
   const Ratingdata =[
     {
     value:1,label:"1-Star"
@@ -123,6 +127,24 @@ const [loading, setLoading] = React.useState(false);
       let { res, got } = await api(urlCustomer, "POST", body);
       if (res.status == 200) {
         // console.log("maindata", body);
+        const userData = sessionStorage.getItem("userData");
+        if (userData !== null) {
+          var code = JSON.parse(userData).UserId;
+        }
+        await getDynamicNavbarList(code);
+        const addresses = getAllAddresses(navData); 
+        const homeAddress = addresses.find((address) =>
+          address.includes("/")
+        );
+
+        if (homeAddress) {
+          history.push(homeAddress);
+        } else if (addresses.length > 0) {
+          // Push to the first address found
+          history.push(addresses[0]);
+        } else {
+          console.log("No address found in navbar data");
+        }
         showToastMessage(got.msg);
         setInputValue({
           BaseURL :'',
@@ -192,6 +214,48 @@ const [loading, setLoading] = React.useState(false);
     loadconfigList()
     
   },[])
+
+  const getDynamicNavbarList = async (code) => {
+    let Url = `/api/LoadUserMenuTree?UserCode=${code}`;
+    try {
+      setLoading(true);
+      let { res, got } = await api(Url, "GET", "");
+      if (res.status == 200) {
+        console.log("sideNavData", JSON.stringify(got));
+        navData = got;
+        // getAllAddresses(navData)
+        setSideBarAddress(navData);
+        setLoading(false);
+      } else {
+        setLoading(false);
+        alert("Something Went Wrong in List loading");
+      }
+    } catch (err) {
+      setLoading(false);
+      alert(err);
+    }
+  };
+
+  function getAllAddresses(data) {
+    const addresses = [];
+
+    function traverse(node, parentAddress = "") {
+      const currentAddress = parentAddress + node.address;
+      addresses.push(currentAddress);
+
+      if (node.children && node.children.length > 0) {
+        node.children.forEach((child) => {
+          traverse(child, currentAddress);
+        });
+      }
+    }
+
+    data.forEach((item) => {
+      traverse(item);
+    });
+    console.log(addresses, "aaadddtttt");
+    return addresses;
+  }
 
   return (
     <>

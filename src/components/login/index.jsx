@@ -217,7 +217,7 @@ const handleSendOtp = (mobile) => {
     e.preventDefault();
 
     const urlStr = `http://${baseUrl}:${port}/api/Authentication?UserName=${user}&Pwd=${password}&ProjType=2`;
-    // console.log('url', urlStr)
+    console.log('url', urlStr)
     try {
       setLoading(true);
       const h = new Headers();
